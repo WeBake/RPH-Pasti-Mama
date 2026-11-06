@@ -36,7 +36,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 .brand h1{font-family:var(--f-display);font-weight:800;font-size:1.6rem;margin:0;letter-spacing:-.01em;color:var(--green-text)}
 .brand h1 span{color:var(--red)}
 .brand p{margin:0;color:var(--muted);font-size:.95rem}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.8rem;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:.95rem;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
 .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .chip.on .dot{background:var(--brand)} .chip.on{color:var(--ink)}
 nav.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:20px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
@@ -53,8 +53,15 @@ label{display:flex;flex-direction:column;gap:6px;font-size:.95rem;font-weight:60
 input,select,textarea{font:inherit;font-size:1rem;font-weight:400;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;min-width:0;min-height:48px}
 input:focus,select:focus,textarea:focus{border-color:var(--brand)}
 textarea{resize:vertical;min-height:80px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:520px){.row{grid-template-columns:1fr}nav.tabs button{padding:12px 8px;font-size:.98rem}}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;align-items:end}
+.row.r3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.row > label{min-width:0}
+label > span.lbl-hint{font-weight:400;color:var(--muted);font-size:.85rem}
+.check{flex-direction:row!important;align-items:center;gap:12px;font-weight:600}
+.check input{width:24px;height:24px;min-height:0;flex:none;accent-color:var(--green)}
+.stack{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.editor .actions .btn,.panel > .btn{align-self:flex-start}
+@media (max-width:560px){.row,.row.r3{grid-template-columns:1fr}.row.keep2{grid-template-columns:1fr 1fr}.editor .actions{flex-direction:column;align-items:stretch}.editor .actions .btn,.panel > .btn{align-self:stretch;flex:1}.prev-bar .actions{width:100%}.prev-bar .actions .btn{flex:1}nav.tabs button{padding:12px 8px;font-size:.98rem}}
 .hint{font-size:.92rem;color:var(--muted);margin:0}
 .weekinfo{background:var(--green-soft);color:var(--green-text);border-radius:12px;padding:12px 14px;font-size:1rem}
 .weekinfo.warn{background:var(--red-soft);color:var(--red-ink)}
@@ -112,7 +119,8 @@ table.rpt tr.cuti td{background:var(--red-soft);color:var(--red-ink)}
 table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 .hp-list{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:2px}
 .hp-list b{font-variant-numeric:tabular-nums}
-.editor{border:1px solid var(--green);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--green-soft)}
+.editor{border:1.5px solid var(--brand);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;background:var(--green-soft)}
+.editor > b{font-family:var(--f-display);font-size:1.15rem;color:var(--green-text)}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px;align-items:start}
 
 /* Rekod */
@@ -196,11 +204,11 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
         <div class="prev-bar">
           <h2>Rancangan Pengajaran Tahunan</h2>
           <div class="actions">
-            <select id="rptPilih" aria-label="Pilih RPT" style="width:auto"></select>
+            <select id="rptPilih" aria-label="Pilih RPT" style="width:auto;max-width:100%"></select>
             <button class="btn small" id="btnRptBaru">+ RPT subjek lain</button>
           </div>
         </div>
-        <div class="row" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+        <div class="row r3">
           <label>Matapelajaran<input id="rSubjek"></label>
           <label>Umur / tahap<input id="rTahap"></label>
           <label>Tahun<input id="rTahun" type="number" min="2020" max="2100"></label>
@@ -250,53 +258,53 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 
   <!-- TETAPAN -->
   <section id="tab-tetapan" hidden>
-    <div class="cols">
+    <div class="stack">
+      <div class="panel">
+        <h2>Kelas &amp; masa</h2>
+        <label>Nama kelas<input id="tKelas"></label>
+        <label>Hari persekolahan <span class="lbl-hint">ikut lajur tarikh dalam RPT</span>
+          <select id="tKumpulan">
+            <option value="B">Isnin – Jumaat</option>
+            <option value="A">Ahad – Khamis</option>
+          </select>
+        </label>
+        <label>Masa sesi <span class="lbl-hint">satu baris untuk satu sesi</span><textarea id="tMasa" rows="3"></textarea></label>
+        <div class="row">
+          <label>Umur murid<input id="tUmur" placeholder="4-5 tahun"></label>
+          <label>Refleksi
+            <select id="tRefleksi">
+              <option value="draf">Bagi draf</option>
+              <option value="kosong">Kosongkan</option>
+            </select>
+          </label>
+        </div>
+        <button class="btn primary" id="btnSimpanTetapan">Simpan tetapan</button>
+      </div>
+      <div class="panel">
+        <h2>Contoh RPH</h2>
+        <p class="hint">AI ikut gaya ayat dalam contoh ini. Tampal RPH terbaik anda di sini.</p>
+        <textarea id="tContoh" style="min-height:220px"></textarea>
+        <button class="btn" id="btnSimpanContoh">Simpan contoh</button>
+      </div>
+      <div class="panel">
+        <h2>Jejak aktiviti</h2>
+        <p class="hint">Sistem ingat aktiviti yang pernah keluar supaya tidak diulang. Bila mula penggal atau tahun baharu, kosongkan jejak.</p>
+        <p class="hint" id="jejakInfo"></p>
+        <button class="btn danger" id="btnResetJejak">Mula penggal baharu</button>
+      </div>
+      <div class="panel">
+        <h2>Backup</h2>
+        <p class="hint">Simpan salinan semua RPT, tetapan dan rekod. Guna bila tukar peranti.</p>
+        <button class="btn" id="btnBackup">Eksport semua (JSON)</button>
+        <label>Pulihkan dari backup<input type="file" id="fileRestore" accept="application/json,.json"></label>
+        <div class="status" id="statusBackup"></div>
+      </div>
       <div class="panel">
         <h2>Status sistem</h2>
         <div class="actions">
           <span class="chip" id="chipAi"><span class="dot"></span><span id="chipAiTxt">AI: menyemak…</span></span>
           <span class="chip" id="chipStore"><span class="dot"></span><span id="chipStoreTxt">Simpanan: pelayar</span></span>
         </div>
-      </div>
-      <div class="panel">
-        <h2>Kelas &amp; masa</h2>
-        <label>Nama kelas (default)<input id="tKelas"></label>
-        <label>Minggu persekolahan
-          <select id="tKumpulan">
-            <option value="B">Isnin – Jumaat (tarikh lajur kedua RPT)</option>
-            <option value="A">Ahad – Khamis (tarikh lajur pertama RPT)</option>
-          </select>
-        </label>
-        <label>Masa sesi default (satu baris satu sesi)<textarea id="tMasa"></textarea></label>
-        <label>Umur murid (untuk AI)<input id="tUmur" placeholder="4-5 tahun"></label>
-        <label>Refleksi
-          <select id="tRefleksi">
-            <option value="draf">Bagi draf, saya ubah lepas mengajar</option>
-            <option value="kosong">Kosongkan, saya isi sendiri</option>
-          </select>
-        </label>
-        <button class="btn primary small" id="btnSimpanTetapan">Simpan tetapan</button>
-      </div>
-      <div class="panel">
-        <h2>Jejak aktiviti</h2>
-        <p class="hint">Sistem ingat setiap aktiviti yang pernah keluar supaya tidak diulang. Bila mula penggal atau tahun baharu, kosongkan jejak supaya semua aktiviti boleh digunakan semula.</p>
-        <p class="hint" id="jejakInfo"></p>
-        <button class="btn small danger" id="btnResetJejak">Mula penggal baharu (kosongkan jejak)</button>
-      </div>
-      <div class="panel">
-        <h2>Contoh RPH (gaya penulisan)</h2>
-        <p class="hint">AI ikut gaya ayat dalam contoh ni: ringkas, bernombor, bahasa mudah. Tampal RPH terbaik anda di sini.</p>
-        <textarea id="tContoh" style="min-height:260px"></textarea>
-        <button class="btn small" id="btnSimpanContoh">Simpan contoh</button>
-      </div>
-      <div class="panel">
-        <h2>Backup</h2>
-        <p class="hint">Simpan salinan semua RPT, tetapan dan rekod sebagai fail JSON. Guna bila tukar peranti.</p>
-        <div class="actions">
-          <button class="btn small" id="btnBackup">Eksport semua (JSON)</button>
-        </div>
-        <label>Pulihkan dari backup<input type="file" id="fileRestore" accept="application/json,.json"></label>
-        <div class="status" id="statusBackup"></div>
       </div>
     </div>
   </section>
@@ -1055,7 +1063,7 @@ function renderSesi(){
         <label>Matapelajaran<input id="subj-${s.id}" list="dlSubjek" value="${esc(s.subjek)}" data-f="subjek"></label>
       </div>
       ${r ? `<label>Tajuk dari RPT ${esc(r.subjek)}<select id="mg-${s.id}" data-f="mingguM"><option value="">— ikut tarikh —</option>${opts}</select></label>` : ""}
-      <label>${r ? "Atau taip tajuk sendiri (kosongkan untuk guna RPT)" : "Tajuk"}<input id="tb-${s.id}" value="${esc(s.tajukBebas)}" data-f="tajukBebas" placeholder="cth: Ulangan surah An-Nas"></label>
+      <label>${r ? `Atau taip tajuk sendiri <span class="lbl-hint">kosongkan untuk ikut RPT</span>` : "Tajuk"}<input id="tb-${s.id}" value="${esc(s.tajukBebas)}" data-f="tajukBebas" placeholder="cth: Ulangan surah An-Nas"></label>
       ${induksiSelect(s)}
       <label ${S.mod === "ai" ? "" : "hidden"}>Nota untuk AI (pilihan)<input id="nt-${s.id}" value="${esc(s.nota)}" data-f="nota" placeholder="cth: guna lagu, ada 3 murid baru, murid suka permainan luar"></label>`;
     el.addEventListener("input", e => {
@@ -1531,20 +1539,22 @@ function renderEditor(){
   if(!w){ slot.innerHTML = ""; return; }
   slot.innerHTML = `<form class="editor" id="edForm">
     <b>Edit minggu ${w.m}</b>
-    <div class="row" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+    <div class="row keep2">
       <label>Minggu<input id="eM" type="number" min="1" value="${w.m}"></label>
-      <label>Bulan<input id="eBulan" value="${esc(w.bulan||"")}"></label>
-      <label>Tarikh (Ahad–Khamis)<input id="eTA" value="${esc(w.tA||"")}" placeholder="25/1-29/1"></label>
-      <label>Tarikh (Isnin–Jumaat)<input id="eTB" value="${esc(w.tB||"")}" placeholder="26/1-30/1"></label>
+      <label>Bulan<input id="eBulan" value="${esc(w.bulan||"")}" placeholder="JAN"></label>
     </div>
-    <div class="row" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
-      <label>Unit<input id="eUnit" value="${esc(w.unit||"")}"></label>
-      <label>Tajuk<input id="eTajuk" value="${esc(w.tajuk||"")}"></label>
-      <label>Muka surat<input id="eMs" value="${esc(w.ms||"")}"></label>
-      <label>Fokus (huruf / suku kata)<input id="eFokus" dir="auto" value="${esc(w.fokus||"")}"></label>
+    <div class="row">
+      <label>Tarikh Ahad–Khamis<input id="eTA" value="${esc(w.tA||"")}" placeholder="25/1-29/1"></label>
+      <label>Tarikh Isnin–Jumaat<input id="eTB" value="${esc(w.tB||"")}" placeholder="26/1-30/1"></label>
     </div>
-    <label>Hasil pembelajaran (satu baris satu HP, kod di depan)<textarea id="eHp">${esc((w.hp||[]).map(h => (h.k ? h.k + " " : "") + h.t).join("\n"))}</textarea></label>
-    <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="eCuti" style="width:auto" ${w.cuti?"checked":""}> Minggu cuti / tiada PdP</label>
+    <div class="row keep2">
+      <label>Unit<input id="eUnit" value="${esc(w.unit||"")}" placeholder="Unit 1"></label>
+      <label>Muka surat<input id="eMs" value="${esc(w.ms||"")}" placeholder="3-8"></label>
+    </div>
+    <label>Tajuk<input id="eTajuk" value="${esc(w.tajuk||"")}"></label>
+    <label>Fokus <span class="lbl-hint">huruf atau suku kata, dalam tulisan Jawi</span><input id="eFokus" dir="auto" value="${esc(w.fokus||"")}"></label>
+    <label>Hasil pembelajaran <span class="lbl-hint">satu baris satu HP, kod di depan</span><textarea id="eHp">${esc((w.hp||[]).map(h => (h.k ? h.k + " " : "") + h.t).join("\n"))}</textarea></label>
+    <label class="check"><input type="checkbox" id="eCuti" ${w.cuti?"checked":""}> Minggu cuti / tiada PdP</label>
     <div class="actions"><button class="btn primary small" type="submit">Simpan minggu</button><button class="btn small" type="button" id="eTutup">Tutup</button><button class="btn small danger" type="button" id="ePadam">Padam minggu</button></div>
   </form>`;
   $("#edForm").addEventListener("submit", async e => {
@@ -1784,8 +1794,8 @@ function renderTetapan(){
 }
 $("#btnResetJejak").addEventListener("click", async e => {
   const b = e.currentTarget;
-  if(b.dataset.ok !== "1"){ b.dataset.ok = "1"; b.textContent = "Tekan sekali lagi untuk kosongkan"; setTimeout(() => { b.dataset.ok = ""; b.textContent = "Mula penggal baharu (kosongkan jejak)"; }, 4000); return; }
-  S.jejak = { ids: [], teks: [] }; b.dataset.ok = ""; b.textContent = "Mula penggal baharu (kosongkan jejak)";
+  if(b.dataset.ok !== "1"){ b.dataset.ok = "1"; b.textContent = "Tekan sekali lagi untuk kosongkan"; setTimeout(() => { b.dataset.ok = ""; b.textContent = "Mula penggal baharu"; }, 4000); return; }
+  S.jejak = { ids: [], teks: [] }; b.dataset.ok = ""; b.textContent = "Mula penggal baharu";
   try{ await saveJejak(); }catch(err){}
   renderTetapan(); renderSesi(); toast("Jejak dikosongkan.");
 });
