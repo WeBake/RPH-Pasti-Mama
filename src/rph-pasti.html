@@ -155,11 +155,11 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
         <h3>Cara jana</h3>
         <div class="actions">
           <div class="seg" role="group" aria-label="Mod jana">
-            <button type="button" id="modAi" aria-pressed="true">AI (kreatif)</button>
-            <button type="button" id="modOff" aria-pressed="false">Offline</button>
+            <button type="button" id="modOff" aria-pressed="true">Bank aktiviti (0 token)</button>
+            <button type="button" id="modAi" aria-pressed="false">AI</button>
           </div>
         </div>
-        <p class="hint" id="modHint">AI karang aktiviti baharu setiap kali dan elak aktiviti yang pernah digunakan dalam rekod anda.</p>
+        <p class="hint" id="modHint">Pilih dari bank aktiviti unit dan bank umum. Aktiviti yang belum pernah digunakan diutamakan. 0 token.</p>
         <div class="actions">
           <button type="submit" class="btn primary" id="btnJana">Jana RPH</button>
           <button type="button" class="btn" id="btnBatal" hidden>Batal</button>
@@ -201,6 +201,7 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
         </div>
         <div class="tbl-wrap"><table class="rpt" id="rptTable"></table></div>
         <div id="rptEditorSlot"></div>
+        <div id="bankSlot"></div>
         <div class="actions">
           <button class="btn small" id="btnTambahMinggu">+ Tambah minggu</button>
           <button class="btn small danger" id="btnPadamRpt">Padam RPT ini</button>
@@ -254,6 +255,7 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
           </select>
         </label>
         <label>Masa sesi default (satu baris satu sesi)<textarea id="tMasa"></textarea></label>
+        <label>Umur murid (untuk AI)<input id="tUmur" placeholder="4-5 tahun"></label>
         <label>Refleksi
           <select id="tRefleksi">
             <option value="draf">Bagi draf, saya ubah lepas mengajar</option>
@@ -261,6 +263,12 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
           </select>
         </label>
         <button class="btn primary small" id="btnSimpanTetapan">Simpan tetapan</button>
+      </div>
+      <div class="panel">
+        <h2>Jejak aktiviti</h2>
+        <p class="hint">Sistem ingat setiap aktiviti yang pernah keluar supaya tidak diulang. Bila mula penggal atau tahun baharu, kosongkan jejak supaya semua aktiviti boleh digunakan semula.</p>
+        <p class="hint" id="jejakInfo"></p>
+        <button class="btn small danger" id="btnResetJejak">Mula penggal baharu (kosongkan jejak)</button>
       </div>
       <div class="panel">
         <h2>Contoh RPH (gaya penulisan)</h2>
@@ -339,6 +347,8 @@ const DEFAULT_TETAPAN = {
   kumpulan: "B",
   masa: ["7.30 pg - 9.30 pg", "10.00 pg - 12.00 tgh"],
   refleksi: "draf",
+  umur: "4-5 tahun",
+  mod: "off",
   contoh: DEFAULT_CONTOH
 };
 
@@ -492,6 +502,390 @@ const BANK = {
     ]
   }
 };
+/* ===================== BANK UNIT SIAP (ditulis khas ikut RPT, 0 token) ===================== */
+// Setiap item: [id, aktiviti, BBM]. Bank unit dipilih dahulu; bila habis baru ambil dari bank umum.
+const PREBANK = [
+{ key:"pre-orientasi", label:"Minggu Orientasi", f:"",
+  match: c => /orientasi|taaruf|ta'aruf/i.test(c.tajuk),
+  induksi:[
+    ["o1-i01","Guru sambut murid dengan boneka tangan 'Kak Pasti' yang memberi salam dan bertanya nama setiap murid.","Boneka tangan"],
+    ["o1-i02","Tayangan video pendek 'Hari Pertama ke Tadika' dan soal jawab ringkas: siapa rasa seronok, siapa rasa takut?","Video, TV / komputer riba"],
+    ["o1-i03","Nyanyian 'Selamat Pagi Cikgu' sambil bersalam dengan rakan di sebelah.","Lirik lagu"],
+    ["o1-i04","Guru buka 'Beg Ajaib' berisi barang sekolah (pensel, buku, botol air). Murid teka kegunaannya satu per satu.","Beg, alat tulis"],
+    ["o1-i05","Permainan 'Bola Nama': guru gulung bola kepada murid, murid sebut nama sendiri dengan kuat.","Bola lembut"],
+    ["o1-i06","Guru tunjuk gambar bangunan PASTI dan tanya murid apa yang mereka nampak semasa datang pagi tadi.","Gambar premis PASTI"],
+    ["o1-i07","Cerita boneka jari 'Adik Comel Takut ke Sekolah' dan bagaimana adik akhirnya gembira.","Boneka jari"],
+    ["o1-i08","Guru bawa cermin besar. Murid lihat wajah sendiri dan buat mimik gembira, sedih dan terkejut.","Cermin"],
+    ["o1-i09","Permainan 'Cikgu Kata' ringkas: sentuh kepala, tepuk tangan, duduk, untuk menarik perhatian murid.","Tiada"],
+    ["o1-i10","Guru tiup buih sabun. Murid yang dapat pecahkan buih sebut nama sendiri.","Buih sabun"],
+    ["o1-i11","Kotak hadiah berisi kad nama setiap murid. Guru panggil nama, murid datang ambil 'hadiah' mereka.","Kotak hadiah, kad nama"],
+    ["o1-i12","Lagu 'Kalau Rasa Gembira' dengan gerakan tepuk tangan dan hentak kaki.","Lagu"]
+  ],
+  teras:[
+    ["o1-t01","Pengenalan awal sesi persekolahan: guru perkenalkan diri, pembantu guru dan nama kelas.","Papan nama kelas"],
+    ["o1-t02","Penerangan peraturan kelas menggunakan kad gambar: beri salam, angkat tangan, tidak berlari dalam kelas.","Kad gambar peraturan"],
+    ["o1-t03","Penerangan asas pengurusan diri: susun kasut, gantung beg dan letak botol air di tempatnya.","Gambar langkah pengurusan diri"],
+    ["o1-t04","Guru tunjuk adab ke tandas: minta izin, doa masuk tandas, pam dan basuh tangan.","Kad doa masuk tandas"],
+    ["o1-t05","Pengenalan carta rutin harian bergambar: kedatangan, doa, belajar, makan, bermain, balik.","Carta rutin harian"],
+    ["o1-t06","Guru ajar 'isyarat diam' (jari di bibir, satu tangan diangkat) dan murid berlatih mengikut isyarat.","Tiada"],
+    ["o1-t07","Guru tunjuk adab makan: basuh tangan, baca doa makan, duduk ketika makan dan guna tangan kanan.","Kad doa makan"],
+    ["o1-t08","Penerangan peraturan premis PASTI: kawasan yang boleh dan tidak boleh dimasuki tanpa guru.","Peta premis bergambar"]
+  ],
+  aktif:[
+    ["o1-a01","Lawatan kecil sekitar premis: kelas, tandas, tempat wuduk, kantin dan ruang solat. Murid sebut nama setiap tempat.","Tiada"],
+    ["o1-a02","Permainan 'Cari Kawan Sama Warna': murid cari rakan yang memakai baju warna sama dan berkenalan.","Tiada"],
+    ["o1-a03","Lakonan adab masuk kelas: murid bergilir beri salam di pintu, susun kasut dan duduk di tempat.","Tiada"],
+    ["o1-a04","Latihan rutin pagi: beratur ikut barisan, baca doa belajar dan ikrar ringkas.","Teks doa"],
+    ["o1-a05","Permainan 'Bot Bergoyang': murid berkumpul ikut bilangan yang guru sebut, kemudian berkenalan dalam kumpulan itu.","Tiada"],
+    ["o1-a06","Permainan 'Muzik Berhenti': bila lagu berhenti, murid bersalam dengan rakan terdekat dan sebut nama rakan itu.","Lagu"],
+    ["o1-a07","Latihan susun kasut: murid tanggalkan kasut, susun berpasangan di rak dan pakai semula.","Rak kasut"],
+    ["o1-a08","Lakonan 'Nak ke Tandas': murid berlatih minta izin dengan ayat 'Cikgu, boleh saya ke tandas?'","Tiada"],
+    ["o1-a09","Permainan 'Teka Bunyi Sekolah': guru mainkan bunyi loceng, air paip dan pintu. Murid teka di mana bunyi itu di PASTI.","Rakaman bunyi"],
+    ["o1-a10","Murid berlatih basuh tangan tujuh langkah sambil menyanyi lagu basuh tangan.","Sabun, poster langkah basuh tangan"],
+    ["o1-a11","Permainan 'Betul atau Tidak': guru tunjuk gambar perbuatan, murid tunjuk ibu jari ke atas jika betul, ke bawah jika salah.","Kad gambar perbuatan"],
+    ["o1-a12","Murid tampal gambar diri pada carta kehadiran bergambar sebaik tiba di kelas.","Carta kehadiran, gambar murid"],
+    ["o1-a13","Bulatan cerita: setiap murid sebut nama dan makanan kegemaran sambil memegang 'bantal giliran'.","Bantal kecil"],
+    ["o1-a14","Permainan 'Ikut Ketua': murid berjalan beratur mengikut guru keliling kelas sambil menyanyi.","Tiada"],
+    ["o1-a15","Latihan kemas mainan: guru mainkan lagu kemas, murid simpan mainan ke dalam bakul ikut warna.","Bakul berwarna, lagu"],
+    ["o1-a16","Lakonan adab makan bersama menggunakan set makanan mainan.","Set makanan mainan"]
+  ],
+  kreatif:[
+    ["o1-k01","Aktiviti mewarna 'Jom ke Sekolah'.","Lembaran mewarna, pensel warna"],
+    ["o1-k02","Murid hias tanda nama sendiri dengan pelekat dan krayon.","Kad nama, pelekat, krayon"],
+    ["o1-k03","Cop tangan murid dengan cat air pada 'Pokok Kelas Kami'.","Cat air, kertas mahjong"],
+    ["o1-k04","Murid lukis wajah sendiri dalam bingkai kertas dan tampal di dinding kelas.","Bingkai kertas, krayon"],
+    ["o1-k05","Murid hias beg kertas kecil sebagai 'Beg Ceria' untuk simpan hasil kerja minggu ini.","Beg kertas, pelekat"],
+    ["o1-k06","Murid lekat kapas pada gambar awan bertulis 'Saya Suka PASTI'.","Kapas, gam, lembaran"],
+    ["o1-k07","Mewarna gambar adab (susun kasut, beri salam) dan bercerita kepada guru tentang gambar itu.","Lembaran mewarna, krayon"],
+    ["o1-k08","Murid bentuk wajah tersenyum dengan plastisin.","Plastisin"],
+    ["o1-k09","Murid hasilkan mahkota kertas 'Murid Baru PASTI' dan pakai sepanjang hari.","Jalur kad, pelekat, stapler"],
+    ["o1-k10","Kolaj 'Sekolah Saya' menggunakan cebisan kertas warna.","Kertas warna, gam"]
+  ],
+  penutup:[
+    ["o1-p01","Murid sebut semula tiga peraturan kelas yang diingat."],
+    ["o1-p02","Doa selepas belajar dan lagu 'Terima Kasih Cikgu'."],
+    ["o1-p03","Guru beri pelekat 'Bintang Hari Pertama' kepada murid yang mengikut rutin."],
+    ["o1-p04","Murid bersalam dengan guru dan rakan sebelum bersurai."],
+    ["o1-p05","Guru tanya 'Apa yang paling seronok hari ini?' dan beberapa murid berkongsi."],
+    ["o1-p06","Murid tunjuk isyarat diam dan beratur keluar kelas dengan tertib."]
+  ]},
+
+{ key:"pre-transisi", label:"Minggu Transisi", f:"",
+  match: c => /transisi/i.test(c.tajuk),
+  induksi:[
+    ["t2-i01","Guru mainkan bunyi haiwan. Murid teka haiwan itu dan ajuk bunyinya.","Rakaman bunyi haiwan"],
+    ["t2-i02","Boneka 'Kak Pasti' bertanya murid apa yang mereka ingat tentang peraturan kelas minggu lepas.","Boneka tangan"],
+    ["t2-i03","Nyanyian 'Alif Ba Ta' perlahan-lahan sambil menepuk peha.","Lagu"],
+    ["t2-i04","Guru tunjuk buku besar bertulisan Jawi dan tanya: 'Tulisan ini sama tak dengan tulisan biasa?'","Buku besar Jawi"],
+    ["t2-i05","Permainan 'Apa dalam Uncang?': murid raba objek dalam uncang dan teka namanya.","Uncang kain, objek maujud"],
+    ["t2-i06","Guru tepuk corak irama (tepuk-tepuk-hentak). Murid ulang corak yang sama.","Tiada"],
+    ["t2-i07","Guru tunjuk dua gambar yang hampir sama dan murid cari perbezaannya.","Kad gambar"],
+    ["t2-i08","Senaman jari 'Jari-Jari Menari' sebagai persediaan memegang pensel.","Tiada"],
+    ["t2-i09","Cerita ringkas 'Semut Rajin' dan kaitkan dengan murid yang rajin belajar.","Buku cerita bergambar"],
+    ["t2-i10","Guru tunjuk 'Kotak Rahsia' berisi kad gambar alat tulis. Murid teka satu per satu.","Kotak, kad gambar"],
+    ["t2-i11","Permainan 'Lampu Isyarat': merah duduk, kuning bangun, hijau berjalan setempat.","Kad warna merah, kuning, hijau"],
+    ["t2-i12","Tayangan video lagu kanak-kanak tentang adab belajar.","Video, TV / komputer riba"]
+  ],
+  teras:[
+    ["t2-t01","Guru tunjuk cara duduk yang betul, cara pegang pensel dan cara buka buku dengan cermat.","Pensel, buku"],
+    ["t2-t02","Guru perkenalkan arah tulisan Jawi dari kanan ke kiri menggunakan anak panah besar di papan putih.","Papan putih, kad anak panah"],
+    ["t2-t03","Latihan mendengar arahan dua langkah (ambil buku, letak di atas meja). Murid ikut arahan guru.","Buku"],
+    ["t2-t04","Guru tunjuk cara membuka buku teks Jawi dari sebelah kanan.","Buku teks Jawi"],
+    ["t2-t05","Pengenalan rutin belajar: doa, bacaan, aktiviti, kemas dan rumusan menggunakan kad bergambar.","Carta rutin belajar"],
+    ["t2-t06","Guru tunjuk garisan pra-tulisan (lurus, melengkung, bulatan) di udara. Murid ikut dengan jari.","Tiada"],
+    ["t2-t07","Guru bacakan buku cerita bergambar dan murid mendengar dengan tertib hingga habis.","Buku cerita besar"],
+    ["t2-t08","Guru tunjuk beberapa kad huruf Jawi besar. Murid perhati bentuknya: ada titik, ada lengkung, ada garisan lurus.","Kad huruf Jawi besar"]
+  ],
+  aktif:[
+    ["t2-a01","Permainan 'Cikgu Kata': murid ikut arahan hanya bila guru sebut 'Cikgu kata'.","Tiada"],
+    ["t2-a02","Murid berjalan mengikut garisan pita di lantai (lurus, zig-zag, berlengkung).","Pita pelekat lantai"],
+    ["t2-a03","Permainan 'Bunyi Apa Tu?': murid tutup mata, guru buat bunyi (ketuk meja, koyak kertas), murid teka.","Objek berbunyi"],
+    ["t2-a04","Murid masukkan manik pada tali untuk melatih otot jari.","Manik besar, tali"],
+    ["t2-a05","Permainan 'Bisik Berantai' dengan perkataan mudah.","Tiada"],
+    ["t2-a06","Murid sepit pom-pom dan masukkan ke dalam bekas ikut warna.","Pom-pom, penyepit, bekas"],
+    ["t2-a07","Permainan 'Patung Cendana': bila muzik berhenti, murid kaku seperti patung.","Lagu"],
+    ["t2-a08","Permainan cermin berpasangan: seorang buat gerakan, seorang lagi mengajuk.","Tiada"],
+    ["t2-a09","Permainan 'Lompat Katak' dari kanan ke kiri mengikut arah tulisan Jawi.","Kad anak panah"],
+    ["t2-a10","Murid koyak kertas kecil-kecil dan gulung menjadi bebola kecil.","Kertas warna"],
+    ["t2-a11","Permainan padan pasangan gambar (kasut, stokin, sarung tangan).","Kad padanan"],
+    ["t2-a12","Latihan menyelak muka surat buku satu per satu dari kanan.","Buku teks"],
+    ["t2-a13","Permainan 'Ketuk Ikut Irama' menggunakan botol berisi beras.","Botol beras"],
+    ["t2-a14","Murid tuang air dari cawan ke cawan tanpa tumpah.","Cawan plastik, air, dulang"],
+    ["t2-a15","Permainan 'Cari Bentuk': murid cari objek bulat, segi empat dan segi tiga dalam kelas.","Kad bentuk"],
+    ["t2-a16","Murid gunting kertas mengikut garisan lurus dengan gunting keselamatan.","Gunting keselamatan, kertas bergaris"]
+  ],
+  kreatif:[
+    ["t2-k01","Murid surih garisan pra-tulisan pada lembaran kerja.","Lembaran kerja surih, pensel"],
+    ["t2-k02","Murid bentuk 'ular' dari plastisin dan susun menjadi garisan lurus dan lengkung.","Plastisin"],
+    ["t2-k03","Murid lukis bulatan dan garisan dengan jari di dalam dulang pasir.","Dulang pasir"],
+    ["t2-k04","Mewarna gambar di dalam garisan dengan kemas.","Lembaran mewarna, krayon"],
+    ["t2-k05","Kolaj koyakan kertas pada gambar pokok.","Kertas warna, gam"],
+    ["t2-k06","Cetakan jari membentuk ulat beluncas.","Cat air, kertas lukisan"],
+    ["t2-k07","Murid hias penanda buku sendiri untuk buku teks Jawi.","Kad, krayon, pelekat"],
+    ["t2-k08","Murid jahit tali pada kad berlubang (lacing card).","Kad berlubang, tali"],
+    ["t2-k09","Murid tampal jalur kertas warna mengikut garisan zig-zag.","Jalur kertas, gam"],
+    ["t2-k10","Melukis bebas 'Kawan Baru Saya'.","Kertas lukisan, krayon"]
+  ],
+  penutup:[
+    ["t2-p01","Murid ulang rutin belajar menggunakan kad bergambar."],
+    ["t2-p02","Murid kemas meja dan alat tulis dalam masa satu lagu."],
+    ["t2-p03","Doa selepas belajar dan bersalam dengan guru."],
+    ["t2-p04","Guru puji murid yang duduk dengan betul dan beri cop bintang di tangan."],
+    ["t2-p05","Murid tunjuk hasil kerja kepada rakan sebelah dan ucap 'Bagusnya!'"],
+    ["t2-p06","Lagu 'Kemas-kemas' sambil murid simpan barang."]
+  ]},
+
+{ key:"pre-jawi-u1", label:"Jawi Unit 1 Huruf Vokal", f:"ا و ي",
+  match: c => /jawi/i.test(c.subjek) && /vokal/i.test(c.tajuk),
+  induksi:[
+    ["u1-i01","Boneka 'Pak Cik Alif' yang tinggi lurus memberi salam dan memperkenalkan dua kawannya, و dan ي.","Boneka kertas huruf"],
+    ["u1-i02","Guru keluarkan ayam, ikan dan ular mainan dari bakul. Murid sebut nama setiap satu dan dengar bunyi awalnya.","Haiwan mainan, bakul"],
+    ["u1-i03","Teka-teki: 'Saya panjang, tiada kaki, menjalar di tanah. Siapa saya?' Guru tekankan bunyi 'u' dalam ular.","Kad gambar ular"],
+    ["u1-i04","Nyanyian 'Alif Ba Ta'. Guru berhenti pada ا, و dan ي supaya murid sebut dengan kuat.","Lagu"],
+    ["u1-i05","Guru tunjuk batang aiskrim yang lurus dan tanya huruf Jawi mana yang bentuknya begini (ا).","Batang aiskrim"],
+    ["u1-i06","Kotak misteri berisi kad gambar ayam, ikan dan ular. Murid ambil satu kad, guru tunjuk huruf awalnya dalam Jawi.","Kotak, kad gambar"],
+    ["u1-i07","Guru bercerita 'Ayam, Itik dan Ular Pergi Berkelah' menggunakan boneka jari.","Boneka jari"],
+    ["u1-i08","Tayangan video pendek bunyi huruf ا و ي.","Video, TV / komputer riba"],
+    ["u1-i09","Guru tunjuk gambar unta dan tanya murid pernah lihat unta di mana. Kaitkan bunyi 'u' dengan huruf و.","Gambar unta"],
+    ["u1-i10","Guru berdiri tegak membentuk huruf ا dengan badan. Murid teka huruf apa.","Tiada"],
+    ["u1-i11","Guru keluarkan 'surat rahsia' bergulung dari dalam botol. Murid buka dan jumpa huruf ا و ي.","Botol, kad bergulung"],
+    ["u1-i12","Lagu ringkas guru: 'Alif, alif, a-a-a, Wau, wau, u-u-u, Ya, ya, i-i-i' ikut rentak lagu 'Twinkle Twinkle'.","Lirik lagu"]
+  ],
+  teras:[
+    ["u1-t01","Guru perkenalkan ا, و dan ي dengan kad imbas besar. Murid sebut ikut guru tiga cara: kuat, perlahan, berbisik.","Kad imbas besar"],
+    ["u1-t02","Guru tunjuk bentuk mulut ketika menyebut 'a', 'i' dan 'u'. Murid lihat cermin kecil dan mengajuk.","Cermin kecil"],
+    ["u1-t03","Bacaan buku teks Unit 1 muka surat {ms} secara ansur maju: guru baca, murid ikut, kemudian berkumpulan.","Buku teks Jawi"],
+    ["u1-t04","Guru tulis ا و ي besar di papan putih. Murid tulis di udara dengan jari.","Papan putih, pen marker"],
+    ["u1-t05","Guru sebut perkataan bergambar (ayam, ikan, ular). Murid kenal pasti bunyi awal: a, i atau u.","Kad gambar"],
+    ["u1-t06","Lagu a-i-u dengan gerakan: tangan lurus ke atas untuk ا, tangan bulat di atas kepala untuk و, tangan ke bawah untuk ي.","Tiada"],
+    ["u1-t07","Guru tunjuk kad perkataan ايم، ايكن، اولر dan bulatkan huruf pertama dengan warna terang.","Kad perkataan, pen warna"],
+    ["u1-t08","Guru sebut dua perkataan (ayam – api, ayam – ular). Murid tepuk jika bunyi awal sama, geleng jika berbeza.","Tiada"]
+  ],
+  aktif:[
+    ["u1-a01","Lompat Huruf: kad ا و ي di lantai. Guru sebut bunyi, murid lompat ke kad yang betul.","Kad lantai"],
+    ["u1-a02","Pancing ikan bermagnet: setiap ikan ada huruf ا, و atau ي. Murid pancing dan sebut bunyinya.","Set pancing magnet"],
+    ["u1-a03","Rumah Huruf: tiga bakul berlabel ا و ي. Murid masukkan kad gambar (ayam, ikan, ular) ke bakul huruf awal yang betul.","Bakul, kad gambar"],
+    ["u1-a04","Siapa Cepat: kad ا و ي di atas meja. Guru sebut perkataan, wakil kumpulan tepuk huruf awalnya.","Kad imbas kecil"],
+    ["u1-a05","Bola Berbunyi: murid baling bola lembut kepada rakan sambil sebut 'a', 'i' atau 'u' ikut kad yang guru angkat.","Bola lembut"],
+    ["u1-a06","Gerak Haiwan: 'ayam' murid jalan macam ayam dan sebut 'a', 'ular' murid menjalar dan sebut 'u', 'itik' murid kedek dan sebut 'i'.","Tiada"],
+    ["u1-a07","Mana Hilang? Guru susun kad ا و ي, murid tutup mata, guru sorok satu kad. Murid teka huruf yang hilang.","Kad imbas"],
+    ["u1-a08","Latihan berpasangan: seorang tunjuk kad huruf, seorang lagi sebut bunyinya. Kemudian bertukar peranan.","Kad imbas kecil"],
+    ["u1-a09","Roda putar ا و ي: murid putar dan sebut satu benda yang bermula dengan bunyi itu.","Roda putar"],
+    ["u1-a10","Patung Huruf: bila muzik berhenti, guru angkat kad, murid buat bentuk huruf dengan badan dan sebut bunyinya.","Lagu, kad imbas"],
+    ["u1-a11","Betul atau Salah: guru tunjuk gambar ular bersama kad ا. Murid angkat kad senyum jika padan, kad sedih jika tidak.","Kad senyum / sedih"],
+    ["u1-a12","Kereta api bunyi: setiap 'gerabak' pegang satu kad. Bila sampai 'stesen', setiap murid sebut bunyi kadnya.","Kad imbas"],
+    ["u1-a13","Cari harta karun: kad gambar disorok dalam kelas. Murid cari dan tampal di bawah huruf awal yang betul di papan.","Kad gambar, pelekat"],
+    ["u1-a14","Bisik Berantai: guru bisik 'ikan', murid sampaikan hingga hujung, murid terakhir sebut bunyi awalnya.","Tiada"],
+    ["u1-a15","Kotak Suara: murid seluk kotak, ambil haiwan mainan, sebut nama dan bunyi awalnya.","Kotak, haiwan mainan"],
+    ["u1-a16","Hop ke Gelung: tiga hula hoop berlabel ا و ي. Guru sebut perkataan, murid lompat ke gelung huruf awalnya.","Hula hoop, kad huruf"]
+  ],
+  kreatif:[
+    ["u1-k01","Murid bentuk ا و ي dengan plastisin dan sebut bunyinya kepada guru.","Plastisin"],
+    ["u1-k02","Murid tekap huruf ا و ي dengan jari di dalam dulang pasir.","Dulang pasir"],
+    ["u1-k03","Kolaj huruf: murid tampal cebisan kertas warna pada rangka huruf ا.","Rangka huruf, kertas warna, gam"],
+    ["u1-k04","Murid lekat biji kacang hijau mengikut garisan huruf و.","Kad rangka huruf, biji kacang, gam"],
+    ["u1-k05","Murid surih ا و ي mengikut titik-titik pada lembaran kerja.","Lembaran kerja surih, pensel"],
+    ["u1-k06","Mewarna gambar ayam, ikan dan ular, kemudian bulatkan huruf awal Jawi di bawah gambar.","Lembaran kerja, pensel warna"],
+    ["u1-k07","Cetakan jari: murid cop jari mengikut bentuk huruf ي.","Cat air, kad rangka huruf"],
+    ["u1-k08","Murid bentuk huruf ا menggunakan batang aiskrim dan hias dengan pelekat.","Batang aiskrim, gam, pelekat"],
+    ["u1-k09","Murid tulis ا و ي di papan tulis kecil dan angkat untuk ditunjuk kepada guru.","Papan tulis kecil, marker"],
+    ["u1-k10","Buku mini 'Huruf Saya': murid lipat kertas menjadi buku tiga muka, satu huruf satu muka, lukis gambar padanan.","Kertas A4, krayon"]
+  ],
+  penutup:[
+    ["u1-p01","Murid sebut semula ا و ي beramai-ramai, ikut kumpulan dan individu."],
+    ["u1-p02","Tiket keluar: setiap murid sebut satu benda yang bermula dengan bunyi 'a', 'i' atau 'u'."],
+    ["u1-p03","Guru angkat kad secara rawak dan murid sebut secepat mungkin."],
+    ["u1-p04","Nyanyi semula lagu a-i-u dengan gerakan tangan."],
+    ["u1-p05","Guru beri pelekat bintang kepada murid yang menyebut dengan betul, kemudian doa selepas belajar."],
+    ["u1-p06","Murid tunjuk hasil kerja dan sebut huruf yang dibuat."]
+  ]},
+
+{ key:"pre-jawi-u2", label:"Jawi Unit 2 Suku Kata با بي بو", f:"با بي بو",
+  match: c => /jawi/i.test(c.subjek) && /suku kata/i.test(c.tajuk) && !/vkv/i.test(c.tajuk) && (/unit\s*2\b/i.test(c.unit) || /با/.test(c.fokus || "")),
+  induksi:[
+    ["u2-i01","Guru keluarkan baju, buku dan bunga dari beg. Murid sebut nama setiap benda dan dengar suku kata awalnya.","Baju, buku, bunga plastik"],
+    ["u2-i02","Boneka 'Abang Ba' datang bersama dua adiknya, 'Bi' dan 'Bu', dan memperkenalkan diri.","Boneka kertas"],
+    ["u2-i03","Nyanyian 'Ba Bi Bu' ikut rentak lagu 'Burung Kakak Tua'.","Lirik lagu"],
+    ["u2-i04","Guru tunjuk huruf ب dan tanya: 'Siapa ingat kawan kita ا و ي? Jom kita gabungkan!'","Kad ب, kad ا و ي"],
+    ["u2-i05","Teka-teki: 'Saya berkelip di langit malam, siapa saya?' (bintang). Guru tekankan bunyi 'bi'.","Kad gambar bintang"],
+    ["u2-i06","Kotak misteri: murid seluk dan keluarkan bantal kecil, bunga plastik atau biji benih.","Kotak, objek maujud"],
+    ["u2-i07","Guru tiup belon sambil menyebut 'ba... bi... bu...' setiap kali tiupan. Murid mengajuk.","Belon"],
+    ["u2-i08","Tayangan video pendek suku kata با بي بو.","Video, TV / komputer riba"],
+    ["u2-i09","Permainan tepuk suku kata: guru sebut 'ba-ju', 'bu-ku', murid tepuk mengikut bilangan suku kata.","Tiada"],
+    ["u2-i10","Guru bercerita 'Bubu Si Burung Biru' menggunakan gambar besar.","Gambar cerita"],
+    ["u2-i11","Guru letak kad ب dan kad ا berjauhan, kemudian dekatkan perlahan-lahan sambil murid sebut 'b... a... ba!'","Kad huruf besar"],
+    ["u2-i12","Permainan 'Suara Siapa?': guru sebut 'ba', 'bi', 'bu' dengan suara haiwan berbeza, murid mengajuk.","Tiada"]
+  ],
+  teras:[
+    ["u2-t01","Guru perkenalkan با بي بو dengan kad imbas. Murid sebut ikut guru dengan suara kuat, perlahan dan berbisik.","Kad imbas"],
+    ["u2-t02","Guru tunjuk ب bergabung dengan ا, ي dan و menggunakan kad lipat.","Kad lipat suku kata"],
+    ["u2-t03","Bacaan buku teks Unit 2 muka surat {ms}: guru baca, murid ikut, kemudian murid tunjuk dengan jari dan baca.","Buku teks Jawi"],
+    ["u2-t04","Guru tulis با بي بو di papan putih. Murid tulis di udara dengan jari.","Papan putih, pen marker"],
+    ["u2-t05","Guru sebut perkataan (baju, biji, buku). Murid angkat kad suku kata awal yang betul.","Kad suku kata"],
+    ["u2-t06","Guru letak gambar dan suku kata awalnya bersebelahan (baju – با) dan murid sebut bersama.","Kad gambar, kad suku kata"],
+    ["u2-t07","Lagu suku kata dengan isyarat tangan: tepuk untuk با, tangan di pipi untuk بي, tangan bulat untuk بو.","Tiada"],
+    ["u2-t08","Guru tunjuk dua kad (با dan با, با dan بو). Murid sebut 'sama' atau 'lain'.","Kad imbas"]
+  ],
+  aktif:[
+    ["u2-a01","Cari Pasangan: setiap murid pegang satu kad suku kata dan cari rakan yang memegang kad yang sama.","Kad suku kata berpasangan"],
+    ["u2-a02","Lompat Suku Kata: kad با بي بو di lantai. Murid lompat ke kad yang disebut guru.","Kad lantai"],
+    ["u2-a03","Pancing suku kata: murid pancing ikan bersuku kata dan bacakan kepada rakan.","Set pancing magnet"],
+    ["u2-a04","Siapa Cepat berkumpulan: guru sebut 'bu', wakil kumpulan tepuk kad بو.","Kad imbas kecil"],
+    ["u2-a05","Bola Suku Kata: bola dilambung perlahan, murid yang menyambut sebut suku kata pada kad yang guru angkat.","Bola lembut, kad"],
+    ["u2-a06","Rumah Suku Kata: tiga kotak berlabel با بي بو. Murid masukkan kad gambar (baju, biji, buku) ke kotak yang betul.","Kotak, kad gambar"],
+    ["u2-a07","Permainan memori: kad suku kata diletak terbalik. Murid buka dua kad dan cari pasangan yang sama.","Kad memori"],
+    ["u2-a08","Kereta api suku kata: setiap gerabak satu suku kata. Di setiap 'stesen', murid baca kad masing-masing.","Kad suku kata"],
+    ["u2-a09","Roda putar suku kata: murid putar dan baca suku kata yang ditunjuk anak panah.","Roda putar"],
+    ["u2-a10","Kerusi muzik suku kata: bila muzik berhenti, murid baca kad di kerusi yang diduduki.","Kerusi, kad, lagu"],
+    ["u2-a11","Baling pundi kacang ke petak suku kata di lantai dan baca suku kata di petak yang kena.","Pundi kacang, petak suku kata"],
+    ["u2-a12","Betul atau Salah: guru tunjuk kad با dan sebut 'bi'. Murid beri isyarat betul atau salah.","Kad imbas"],
+    ["u2-a13","Bisikan suku kata: guru bisik 'bi', murid terakhir dalam barisan ambil kad yang betul.","Kad suku kata"],
+    ["u2-a14","Cari di Dinding: kad suku kata ditampal di dinding. Guru sebut, murid berjalan pantas mengambil kad yang betul.","Kad suku kata, pelekat"],
+    ["u2-a15","Baca berpasangan: seorang tunjuk kad, seorang lagi baca. Kemudian bertukar.","Kad imbas kecil"],
+    ["u2-a16","Lagu Patung: bila muzik berhenti, guru angkat kad suku kata. Murid yang sebut dengan betul boleh bergerak semula.","Lagu, kad imbas"]
+  ],
+  kreatif:[
+    ["u2-k01","Murid bentuk suku kata بو dengan plastisin dan baca kepada guru.","Plastisin"],
+    ["u2-k02","Murid tekap با بي بو di dalam dulang pasir.","Dulang pasir"],
+    ["u2-k03","Kolaj suku kata: murid tampal gambar baju, biji dan buku di bawah suku kata awal yang betul.","Kad gambar kecil, kertas A4, gam"],
+    ["u2-k04","Murid surih با بي بو mengikut titik pada lembaran kerja.","Lembaran kerja surih, pensel"],
+    ["u2-k05","Cop span bercat mengikut rangka suku kata بي.","Span, cat air, kad rangka"],
+    ["u2-k06","Murid buat 'kipas suku kata' dari kertas berlipat, setiap lipatan ada satu suku kata untuk diwarnakan.","Kertas A4, krayon"],
+    ["u2-k07","Murid tulis suku kata yang disebut guru di papan tulis kecil.","Papan tulis kecil, marker"],
+    ["u2-k08","Mewarna ikut kod: ruang با warna merah, بي kuning, بو biru.","Lembaran warna-ikut-kod, pensel warna"],
+    ["u2-k09","Murid hias kad suku kata dengan labuci dan bawa pulang untuk dibaca bersama ibu bapa.","Kad, labuci, gam"],
+    ["u2-k10","Buku mini suku kata: tiga muka, setiap muka satu suku kata dan lukisan benda yang bermula dengannya.","Kertas A4, krayon"]
+  ],
+  penutup:[
+    ["u2-p01","Murid baca semula با بي بو beramai-ramai, ikut kumpulan dan individu."],
+    ["u2-p02","Tiket keluar: setiap murid baca satu kad suku kata sebelum keluar kelas."],
+    ["u2-p03","Guru sebut perkataan, murid jawab suku kata awalnya secara beramai-ramai."],
+    ["u2-p04","Nyanyi semula lagu 'Ba Bi Bu' dengan isyarat tangan."],
+    ["u2-p05","Guru beri pelekat bintang kepada murid yang membaca dengan betul, diikuti doa selepas belajar."]
+  ]},
+
+{ key:"pre-jawi-u3", label:"Jawi Unit 3 Suku Kata (vkv)", f:"",
+  match: c => /jawi/i.test(c.subjek) && (/vkv/i.test(c.tajuk) || /unit\s*3\b/i.test(c.unit)),
+  induksi:[
+    ["u3-i01","Guru tunjuk gambar ibu dan anak. Murid sebut 'ibu', guru pecahkan kepada 'i – bu' sambil tepuk dua kali.","Kad gambar ibu"],
+    ["u3-i02","Guru bawa ubi keledek sebenar. Murid sentuh dan sebut 'u – bi'.","Ubi keledek"],
+    ["u3-i03","Boneka 'Adik Abu' memperkenalkan diri: 'Nama saya A – bu!'","Boneka tangan"],
+    ["u3-i04","Nyanyian lagu kanak-kanak tentang ibu. Guru tanya perkataan apa yang selalu disebut dalam lagu.","Lagu"],
+    ["u3-i05","Guru pegang kad ا di tangan kanan dan kad بو di tangan kiri, kemudian cantumkan: 'a... bu... abu!'","Kad suku kata"],
+    ["u3-i06","Teka-teki: 'Saya tumbuh dalam tanah, boleh direbus, rasanya manis. Siapa saya?' (ubi)","Kad gambar ubi"],
+    ["u3-i07","Permainan tepuk nama: murid tepuk suku kata nama sendiri (A-li, I-sa).","Tiada"],
+    ["u3-i08","Tayangan video pendek membatang suku kata vokal dengan با بي بو.","Video, TV / komputer riba"],
+    ["u3-i09","Kotak misteri berisi gambar ibu, ubi dan abu dapur. Murid ambil satu dan sebut namanya.","Kotak, kad gambar"],
+    ["u3-i10","Guru bercerita pendek 'Ibu Masak Ubi' dengan boneka jari.","Boneka jari"],
+    ["u3-i11","Permainan 'Sambung Saya': guru sebut 'i...', murid teka sambungannya 'bu' berdasarkan gambar.","Kad gambar"],
+    ["u3-i12","Guru tunjuk dua kotak kasut bersambung seperti kereta api: gerabak pertama ا, gerabak kedua بو.","Kotak kasut, kad suku kata"]
+  ],
+  teras:[
+    ["u3-t01","Guru cantumkan kad ا dan kad بو menjadi ابو. Murid batang ikut guru: 'a – bu, abu'.","Kad suku kata"],
+    ["u3-t02","Guru perkenalkan ايبو dan اوبي dengan gambar ibu dan ubi. Murid batang dan sebut perkataan.","Kad perkataan bergambar"],
+    ["u3-t03","Bacaan buku teks Unit 3 muka surat {ms} secara ansur maju.","Buku teks Jawi"],
+    ["u3-t04","Guru tepuk dua kali untuk dua suku kata (i – bu). Murid tepuk sambil membatang.","Tiada"],
+    ["u3-t05","Guru tulis suku kata dalam dua warna di papan putih (اي merah, بو biru). Murid batang ikut warna.","Pen marker dua warna"],
+    ["u3-t06","Guru tunjuk cara 'melompat' dari suku kata pertama ke suku kata kedua dengan jari, dari kanan ke kiri.","Kad perkataan besar"],
+    ["u3-t07","Guru sebut perkataan dengan lambat (iii – buuu). Murid teka perkataan itu.","Tiada"],
+    ["u3-t08","Guru gunakan 'tangga suku kata': anak tangga pertama suku kata vokal, anak tangga kedua suku kata با بي بو.","Carta tangga suku kata"]
+  ],
+  aktif:[
+    ["u3-a01","Cari Pasangan: separuh murid pegang kad suku kata vokal (ا، اي، او), separuh lagi kad با بي بو. Murid cari pasangan dan baca perkataan yang terbentuk.","Kad suku kata"],
+    ["u3-a02","Puzzle perkataan: gambar ibu dan ubi dipotong dua, setiap keping ada satu suku kata. Murid cantum dan baca.","Puzzle perkataan"],
+    ["u3-a03","Engkek suku kata: murid lompat petak pertama sebut 'i', petak kedua sebut 'bu', mendarat sebut 'ibu'.","Petak lantai"],
+    ["u3-a04","Kereta api dua gerabak: dua murid jadi gerabak memegang kad suku kata, kelas batang dan sebut perkataannya.","Kad suku kata"],
+    ["u3-a05","Pancing dua kali: murid pancing satu suku kata vokal dan satu suku kata ب, cantumkan dan baca.","Set pancing magnet"],
+    ["u3-a06","Teka Gambar: guru tunjuk kad perkataan, murid pilih gambar yang betul (ibu, ubi, abu).","Kad gambar, kad perkataan"],
+    ["u3-a07","Tepuk dan Batang: tepuk peha untuk suku kata pertama, tepuk tangan untuk suku kata kedua.","Tiada"],
+    ["u3-a08","Kotak Cantum: dua kotak (suku kata vokal dan با بي بو). Murid ambil satu kad dari setiap kotak dan cuba membatang.","Dua kotak, kad suku kata"],
+    ["u3-a09","Lagu 'Ibu, Ibu' gubahan guru. Murid angkat kad perkataan bila perkataan itu dinyanyikan.","Kad perkataan, lirik"],
+    ["u3-a10","Main peranan 'Kedai Ubi': murid 'membeli' ubi dengan membaca kad اوبي kepada penjual.","Ubi mainan, kad perkataan"],
+    ["u3-a11","Siapa Cepat: guru batang perkataan, wakil kumpulan tepuk kad perkataan yang betul.","Kad perkataan"],
+    ["u3-a12","Suku Kata Hilang: kad perkataan dengan satu ruang kosong. Murid pilih suku kata yang melengkapkannya.","Kad perkataan berlubang, kad suku kata"],
+    ["u3-a13","Roda dua lapis: roda luar suku kata vokal, roda dalam با بي بو. Murid putar dan batang hasilnya.","Roda dua lapis"],
+    ["u3-a14","Lompat ke Gambar: gambar ibu, ubi dan abu di lantai. Guru batang perlahan, murid lompat ke gambar yang betul.","Kad gambar besar"],
+    ["u3-a15","Berpasangan: seorang membatang kad perkataan, seorang lagi mencari gambar padanannya.","Kad perkataan, kad gambar"],
+    ["u3-a16","Bisikan perkataan: guru bisik 'u-bi', murid terakhir dalam barisan tunjuk kad perkataan yang betul.","Kad perkataan"]
+  ],
+  kreatif:[
+    ["u3-k01","Murid tampal dua keping suku kata di atas kad untuk membina ايبو dan lukis gambar ibu.","Kad, kepingan suku kata, gam, krayon"],
+    ["u3-k02","Murid warna gambar ubi dan surih perkataan اوبي di bawahnya.","Lembaran kerja, pensel warna"],
+    ["u3-k03","'Sandwic suku kata': dua keping roti kertas, setiap keping satu suku kata, dicantum dengan 'inti' kertas.","Kertas warna, gam"],
+    ["u3-k04","Murid bentuk perkataan ابو dengan plastisin.","Plastisin"],
+    ["u3-k05","Kad ucapan 'Sayang Ibu' dengan perkataan ايبو untuk dibawa pulang.","Kad, krayon, pelekat"],
+    ["u3-k06","Rantai kertas dua gelung: setiap gelung ditulis satu suku kata dan disambung menjadi perkataan.","Jalur kertas, gam"],
+    ["u3-k07","Murid tekap dua suku kata di dalam dulang pasir dan sebut perkataannya.","Dulang pasir"],
+    ["u3-k08","Cop ubi yang dipotong bersama cat pada kertas, kemudian tampal kad perkataan اوبي di tengah.","Ubi dipotong, cat air, kad perkataan"],
+    ["u3-k09","Murid tulis suku kata kedua yang guru sebut di papan tulis kecil.","Papan tulis kecil, marker"],
+    ["u3-k10","Buku mini 'Keluarga Saya' dengan perkataan ايبو dan ابو serta lukisan.","Kertas A4, krayon"]
+  ],
+  penutup:[
+    ["u3-p01","Murid batang semula ابو، ايبو، اوبي beramai-ramai dan individu."],
+    ["u3-p02","Tiket keluar: setiap murid batang satu kad perkataan."],
+    ["u3-p03","Guru batang perlahan, murid sebut perkataan penuh dengan kuat."],
+    ["u3-p04","Murid tunjuk hasil kerja dan baca perkataannya kepada rakan."],
+    ["u3-p05","Doa untuk ibu bapa (Rabbighfirli waliwalidayya) dan doa selepas belajar."],
+    ["u3-p06","Guru beri pelekat 'Pandai Membatang' kepada murid."]
+  ]},
+
+{ key:"pre-jawi-u4", label:"Jawi Unit 4 Suku Kata", f:"suku kata terbuka",
+  match: c => /jawi/i.test(c.subjek) && /unit\s*4\b/i.test(c.unit),
+  induksi:[
+    ["u4-i01","Kotak misteri: guru keluarkan kad {f} satu demi satu, murid teka bunyinya.","Kotak, kad imbas"],
+    ["u4-i02","Boneka 'Pak Cik Jawi' bawa sampul surat berisi suku kata baharu untuk murid baca.","Boneka tangan, sampul surat"],
+    ["u4-i03","Nyanyian lagu suku kata ikut rentak lagu 'Bangun Pagi'.","Lirik lagu"],
+    ["u4-i04","Guru tunjuk objek sebenar dan murid sebut namanya. Guru tekankan suku kata awal.","Objek maujud"],
+    ["u4-i05","Kad {f} disorok di bawah kerusi murid. Murid cari dan tunjuk kepada kelas.","Kad imbas"],
+    ["u4-i06","Tayangan video pendek suku kata terbuka.","Video, TV / komputer riba"],
+    ["u4-i07","Teka gambar separuh: guru tunjuk separuh gambar, murid teka dan sebut suku kata awalnya.","Kad gambar"],
+    ["u4-i08","Guru bunyikan loceng mengikut bilangan suku kata dalam perkataan. Murid kira bilangannya.","Loceng"],
+    ["u4-i09","Permainan 'Tukar Tempat': murid yang suku katanya dipanggil bertukar tempat duduk.","Kad suku kata"],
+    ["u4-i10","Guru imbas semula suku kata minggu lepas dengan kad kilat dan kaitkan dengan suku kata baharu.","Kad imbas"]
+  ],
+  teras:[
+    ["u4-t01","Guru perkenalkan {f} dengan kad imbas besar. Murid sebut dengan bimbingan guru.","Kad imbas besar"],
+    ["u4-t02","Guru tunjuk bentuk mulut ketika menyebut {f}. Murid lihat cermin dan mengajuk.","Cermin kecil"],
+    ["u4-t03","Bacaan buku teks Unit 4 muka surat {ms} secara ansur maju.","Buku teks Jawi"],
+    ["u4-t04","Guru tulis {f} di papan putih. Murid tulis di udara dan di belakang rakan dengan jari.","Papan putih, pen marker"],
+    ["u4-t05","Guru sebut perkataan bergambar. Murid kenal pasti sama ada suku kata awalnya sama atau berbeza.","Kad gambar"],
+    ["u4-t06","Lagu suku kata dengan gerakan badan bagi setiap suku kata.","Lirik lagu"]
+  ],
+  aktif:[
+    ["u4-a01","Lompat ke kad {f} di lantai mengikut suku kata yang disebut guru.","Kad lantai"],
+    ["u4-a02","Pancing suku kata dan baca kepada kumpulan.","Set pancing magnet"],
+    ["u4-a03","Permainan memori mencari pasangan kad suku kata.","Kad memori"],
+    ["u4-a04","Siapa Cepat berkumpulan: tepuk kad suku kata yang disebut guru.","Kad imbas kecil"],
+    ["u4-a05","Baling pundi kacang ke petak suku kata dan baca suku kata yang kena.","Pundi kacang, petak suku kata"],
+    ["u4-a06","Rumah Suku Kata: murid masukkan kad gambar ke kotak suku kata awal yang betul.","Kotak berlabel, kad gambar"],
+    ["u4-a07","Bola Suku Kata: penyambut bola sebut suku kata pada kad yang guru angkat.","Bola lembut, kad"],
+    ["u4-a08","Kerusi muzik suku kata.","Kerusi, kad, lagu"],
+    ["u4-a09","Mana Hilang? Murid teka kad {f} yang disorok guru.","Kad imbas"],
+    ["u4-a10","Baca berpasangan dan bertukar peranan.","Kad imbas kecil"],
+    ["u4-a11","Roda putar suku kata.","Roda putar"],
+    ["u4-a12","Kereta api suku kata berhenti di setiap stesen untuk membaca.","Kad suku kata"],
+    ["u4-a13","Cari harta karun kad {f} di sekitar kelas dan baca kepada guru.","Kad imbas"],
+    ["u4-a14","Betul atau Salah dengan kad senyum dan kad sedih.","Kad senyum / sedih"]
+  ],
+  kreatif:[
+    ["u4-k01","Murid bentuk {f} dengan plastisin.","Plastisin"],
+    ["u4-k02","Murid tekap {f} di dalam dulang pasir.","Dulang pasir"],
+    ["u4-k03","Murid surih {f} pada lembaran kerja.","Lembaran kerja surih, pensel"],
+    ["u4-k04","Kolaj kertas warna pada rangka suku kata.","Rangka suku kata, kertas warna, gam"],
+    ["u4-k05","Mewarna ikut kod suku kata.","Lembaran warna-ikut-kod"],
+    ["u4-k06","Murid tulis suku kata di papan tulis kecil.","Papan tulis kecil, marker"],
+    ["u4-k07","Murid hias kad suku kata dan bawa pulang untuk dibaca bersama ibu bapa.","Kad, pelekat"],
+    ["u4-k08","Cop jari mengikut rangka suku kata.","Cat air, kad rangka"]
+  ],
+  penutup:[
+    ["u4-p01","Murid baca semula {f} beramai-ramai dan individu."],
+    ["u4-p02","Tiket keluar: setiap murid baca satu kad suku kata."],
+    ["u4-p03","Guru angkat kad secara rawak, murid baca secepat mungkin."],
+    ["u4-p04","Murid tunjuk hasil kerja kepada rakan dan bacakan suku katanya."],
+    ["u4-p05","Pujian, pelekat bintang dan doa selepas belajar."]
+  ]}
+];
+
 const NILAI = ["Fokus","Tekun","Bekerjasama","Hormat-menghormati","Sabar","Yakin diri","Bersyukur","Berdisiplin","Kasih sayang","Bertanggungjawab","Menjaga kebersihan","Berani mencuba"];
 
 /* ===================== UTIL ===================== */
@@ -535,6 +929,19 @@ const Store = {
     }
     try{ const v = localStorage.getItem("rphpasti:" + k); return v ? JSON.parse(v) : null; }catch(e){ return null; }
   },
+  async list(prefix){
+    const out = {};
+    try{
+      for(let i = 0; i < localStorage.length; i++){
+        const k = localStorage.key(i);
+        if(k && k.startsWith("rphpasti:" + prefix)) out[k.slice(9)] = JSON.parse(localStorage.getItem(k));
+      }
+    }catch(e){}
+    if(this.mode === "db"){
+      try{ const q = await this.col.get(); q.docs.forEach(d => { if(d.id.startsWith(prefix)) out[d.id] = d.data(); }); }catch(e){}
+    }
+    return out;
+  },
   async set(k, v){
     try{ localStorage.setItem("rphpasti:" + k, JSON.stringify(v)); }catch(e){}
     if(this.mode === "db"){ await this.col.doc(k).set(v); }
@@ -551,7 +958,9 @@ const S = {
   sesi: [],          // borang sesi
   hasil: [],         // hasil jana bagi setiap sesi
   meta: null,        // {tarikh, hari, minggu, kelas}
-  mod: "ai",
+  mod: "off",
+  banks: {},         // bank aktiviti yang dibina AI, ikut kunci unit
+  bankLihat: null,
   sample: null,
   downloads: null,
   sedangJana: false,
@@ -634,12 +1043,13 @@ function renderSesi(){
       </div>
       ${r ? `<label>Tajuk dari RPT ${esc(r.subjek)}<select id="mg-${s.id}" data-f="mingguM"><option value="">— ikut tarikh —</option>${opts}</select></label>` : ""}
       <label>${r ? "Atau taip tajuk sendiri (kosongkan untuk guna RPT)" : "Tajuk"}<input id="tb-${s.id}" value="${esc(s.tajukBebas)}" data-f="tajukBebas" placeholder="cth: Ulangan surah An-Nas"></label>
+      ${induksiSelect(s)}
       <label>Nota untuk AI (pilihan)<input id="nt-${s.id}" value="${esc(s.nota)}" data-f="nota" placeholder="cth: guna lagu, ada 3 murid baru, murid suka permainan luar"></label>`;
     el.addEventListener("input", e => {
       const f = e.target.dataset.f; if(!f) return;
       s[f] = e.target.value;
     });
-    el.addEventListener("change", e => { const f = e.target.dataset.f; if(f) { s[f] = e.target.value; if(f==="subjek") renderSesi(); } });
+    el.addEventListener("change", e => { const f = e.target.dataset.f; if(f) { s[f] = e.target.value; if(f==="subjek" || f==="mingguM" || f==="tajukBebas"){ if(f!=="induksiId") s.induksiId = ""; renderSesi(); } } });
     list.appendChild(el);
   });
   $$("[data-buang]", list).forEach(b => b.addEventListener("click", () => {
@@ -647,6 +1057,16 @@ function renderSesi(){
   }));
 }
 
+function induksiSelect(s){
+  const d = parseISO($("#fTarikh").value) || new Date();
+  const ctx = buildCtx(s, d);
+  const { L } = layersFor(ctx);
+  const used = usedMap();
+  const items = L.induksi.flat();
+  if(!items.length) return "";
+  const opt = items.map(it => `<option value="${esc(it.id)}" ${it.id === s.induksiId ? "selected" : ""}>${used.has(it.id) ? "✓ " : ""}${esc(fill(it, ctx).slice(0, 90))}</option>`).join("");
+  return `<label>Set induksi<select id="ind-${s.id}" data-f="induksiId"><option value="">Auto: pilih yang belum digunakan</option>${opt}</select></label>`;
+}
 $("#btnTambahSesi").addEventListener("click", () => { S.sesi.push(defaultSesi(S.sesi.length)); S.sesi[S.sesi.length-1].tajukBebas = ""; renderSesi(); });
 
 function updateWeekInfo(){
@@ -664,20 +1084,21 @@ function updateWeekInfo(){
   box.className = w.cuti ? "weekinfo warn" : "weekinfo";
   box.innerHTML = `${esc(hari)}, ${esc(fmtTarikh(d))} · <b>Minggu ${w.m}</b>: ${jw([w.unit, w.tajuk].filter(Boolean).join(" "))}${w.fokus ? " " + jw(w.fokus) : ""}${w.cuti ? " (minggu cuti)" : ""}`;
 }
-$("#fTarikh").addEventListener("change", updateWeekInfo);
+$("#fTarikh").addEventListener("change", () => { S.sesi.forEach(x => x.induksiId = ""); renderSesi(); updateWeekInfo(); });
 
 /* Mod AI / Offline */
-function setMod(m){
+function setMod(m, simpan){
   if(m === "ai" && !S.sample) m = "off";
   S.mod = m;
+  if(simpan){ S.tetapan.mod = m; saveTetapan().catch(() => {}); }
   $("#modAi").setAttribute("aria-pressed", String(m === "ai"));
   $("#modOff").setAttribute("aria-pressed", String(m === "off"));
   $("#modHint").textContent = m === "ai"
-    ? "AI karang aktiviti baharu setiap kali dan elak aktiviti yang pernah digunakan dalam rekod anda."
-    : "Enjin offline pilih dari bank aktiviti terbina dan elak yang baru digunakan. Laju dan percuma, tapi kurang variasi berbanding AI.";
+    ? "AI karang RPH baharu setiap kali (guna kuota Claude anda, lebih kurang 4-5 ribu token satu sesi)."
+    : "Pilih dari bank aktiviti unit dan bank umum. Aktiviti yang belum pernah digunakan diutamakan. 0 token.";
 }
-$("#modAi").addEventListener("click", () => setMod("ai"));
-$("#modOff").addEventListener("click", () => setMod("off"));
+$("#modAi").addEventListener("click", () => setMod("ai", true));
+$("#modOff").addEventListener("click", () => setMod("off", true));
 
 /* ===================== KONTEKS SESI ===================== */
 function buildCtx(s, d){
@@ -699,7 +1120,8 @@ function buildCtx(s, d){
     cuti: !bebas && !!w?.cuti,
     minggu: w?.m || null,
     prev: (!bebas && w) ? prevWeek(r, w) : null,
-    tahap: r?.tahap || "6 Tahun"
+    tahap: S.tetapan.umur || r?.tahap || "4-5 tahun",
+    induksiId: s.induksiId || ""
   };
   ctx.jenis = jenisOf(ctx.subjek, ctx.tajuk);
   return ctx;
@@ -722,14 +1144,53 @@ function namaTajuk(ctx){
   if(ctx.jenis === "hafazan") t = t.replace(/^(ulangan|hafazan|bacaan)\s+/i, "");
   return t;
 }
-function fill(tpl, ctx){
-  const f = ctx.fokus || ctx.tajuk || "tajuk hari ini";
+const KAT = ["induksi","teras","aktif","kreatif","penutup"];
+const KAT_LABEL = { induksi:"Set induksi", teras:"Pengenalan / demonstrasi", aktif:"Aktiviti & permainan", kreatif:"Hasil kerja / kreatif", penutup:"Penutup" };
+function itemsOf(list, f){
+  return (list || []).map(x => Array.isArray(x) ? { id: x[0], t: x[1], b: x[2] || "", f } : { id: x.id, t: x.t, b: x.b || "", f });
+}
+function bankKey(c){
+  const str = [c.subjek, c.unit, c.tajuk].map(x => String(x || "").trim().toLowerCase().replace(/\s+/g, " ")).join("|");
+  let h = 5381; for(const ch of str) h = (((h << 5) + h) ^ ch.codePointAt(0)) >>> 0;
+  return "bank_" + h.toString(36);
+}
+function unitBanks(c){
+  const out = [];
+  const pre = PREBANK.find(b => { try{ return b.match(c); }catch(e){ return false; } });
+  if(pre){ const o = { label: pre.label, src: "siap", f: pre.f }; KAT.forEach(k => o[k] = itemsOf(pre[k], pre.f)); out.push(o); }
+  const ai = S.banks[bankKey(c)];
+  if(ai){ const o = { label: ai.label || "Bank AI", src: "ai", f: ai.f || "" }; KAT.forEach(k => o[k] = itemsOf(ai[k], ai.f || "")); out.push(o); }
+  return out;
+}
+function bankCount(c){ return unitBanks(c).reduce((n, b) => n + KAT.reduce((m, k) => m + b[k].length, 0), 0); }
+function usedMap(){ const m = new Map(); S.jejak.ids.forEach((id, i) => { if(!m.has(id)) m.set(id, i); }); return m; }
+function fill(it, ctx){
+  const tpl = typeof it === "string" ? it : it.t;
+  const f = ctx.fokus || (it && it.f) || ctx.tajuk || "tajuk hari ini";
   return tpl.replaceAll("{f}", f).replaceAll("{t}", namaTajuk(ctx)).replaceAll("{ms}", ctx.ms || "berkaitan");
 }
-function pick(arr, n, used){
-  const fresh = shuffle(arr.filter(x => !used.has(x[0])));
-  const old = shuffle(arr.filter(x => used.has(x[0])));
-  return [...fresh, ...old].slice(0, n);
+// Ambil n item: utamakan yang belum pernah digunakan (ikut lapisan: bank unit dahulu, kemudian bank umum),
+// jika semua sudah digunakan, ambil yang paling lama tidak digunakan.
+function pickL(layers, n, used, exclude){
+  const all = [];
+  layers.forEach((L, li) => L.forEach(it => { if(!exclude.has(it.id)) all.push({ it, li }); }));
+  const res = [];
+  for(let li = 0; li < layers.length && res.length < n; li++){
+    res.push(...shuffle(all.filter(x => x.li === li && !used.has(x.it.id))).slice(0, n - res.length));
+  }
+  if(res.length < n){
+    const old = all.filter(x => used.has(x.it.id) && !res.includes(x)).sort((a, b) => used.get(b.it.id) - used.get(a.it.id));
+    res.push(...old.slice(0, n - res.length));
+  }
+  res.forEach(x => exclude.add(x.it.id));
+  return res.map(x => x.it);
+}
+function layersFor(ctx){
+  const ub = unitBanks(ctx);
+  const gen = BANK[ctx.jenis] || BANK.umum;
+  const L = {};
+  KAT.forEach(k => L[k] = [...ub.map(b => b[k]), itemsOf(gen[k], "")]);
+  return { L, ub };
 }
 function hpAyat(t){
   const s = String(t).trim().replace(/\.$/, "");
@@ -737,17 +1198,22 @@ function hpAyat(t){
   return "Murid dapat " + s.charAt(0).toLowerCase() + s.slice(1) + ".";
 }
 function janaOffline(ctx){
-  const bank = BANK[ctx.jenis] || BANK.umum;
-  const used = new Set(S.jejak.ids);
-  const ind = pick(bank.induksi, 1, used)[0];
-  const ter = pick(bank.teras, 1, used)[0];
-  const akt = pick(bank.aktif, 2, used);
-  const kre = pick(bank.kreatif, 1, used)[0];
-  const pen = pick(bank.penutup, 1, used)[0];
+  const { L, ub } = layersFor(ctx);
+  const used = usedMap();
+  const ex = new Set();
+  let ind = ctx.induksiId ? L.induksi.flat().find(x => x.id === ctx.induksiId) : null;
+  if(ind) ex.add(ind.id); else ind = pickL(L.induksi, 1, used, ex)[0];
+  const ter = pickL(L.teras, 1, used, ex)[0];
+  const akt = pickL(L.aktif, 2, used, ex);
+  const kre = pickL(L.kreatif, 1, used, ex)[0];
+  const pen = pickL(L.penutup, 1, used, ex)[0];
   const chosen = [ter, ...akt, kre].filter(Boolean);
-  const ids = [ind, ...chosen, pen].filter(Boolean).map(x => x[0]);
-  const bbm = [...new Set([ind, ...chosen].map(x => x && x[2]).filter(b => b && b !== "Tiada"))];
-  if(ctx.ms && ctx.jenis === "jawi") bbm.unshift(`Buku teks ${ctx.subjek} ms ${ctx.ms}`);
+  const ids = [ind, ...chosen, pen].filter(Boolean).map(x => x.id);
+  const bbm = [...new Set([ind, ...chosen].map(x => x && x.b).filter(b => b && b !== "Tiada"))];
+  if(ctx.ms && ctx.jenis === "jawi"){
+    for(let i = bbm.length - 1; i >= 0; i--) if(/^buku teks/i.test(bbm[i])) bbm.splice(i, 1);
+    bbm.unshift(`Buku teks ${ctx.subjek} ms ${ctx.ms}`);
+  }
   let hp = ctx.hp.length ? ctx.hp.slice(0, 3).map(h => hpAyat(h.t)) : [];
   if(!hp.length){
     hp = ctx.jenis === "orientasi"
@@ -761,7 +1227,7 @@ function janaOffline(ctx){
     : ctx.prev ? `Murid telah mempelajari ${[ctx.prev.unit, ctx.prev.tajuk].filter(Boolean).join(" ")}${ctx.prev.fokus ? " (" + ctx.prev.fokus + ")" : ""}.`
     : ctx.jenis === "hafazan" ? "Murid pernah mendengar bacaan surah ini." : "Murid pernah melihat dan mendengar perkara berkaitan tajuk ini.";
   const nilai = shuffle(NILAI).slice(0, 2).join(", ");
-  const fk = ctx.fokus || ctx.tajuk || "tajuk hari ini";
+  const fk = ctx.fokus || ub[0]?.f || ctx.tajuk || "tajuk hari ini";
   const refl = ctx.jenis === "orientasi"
     ? "__ / __ murid mengikuti sesi dengan baik. __ murid masih perlukan bimbingan untuk ikut rutin."
     : ctx.jenis === "hafazan" ? `__ / __ murid dapat membaca ${namaTajuk(ctx)} dengan lancar. __ murid perlukan tasmik tambahan.`
@@ -770,8 +1236,8 @@ function janaOffline(ctx){
     tajuk: ctx.tajuk || "-",
     pengetahuanSediaAda: psa,
     hp,
-    setInduksi: fill(ind[1], ctx),
-    aktiviti: [...chosen.map(x => fill(x[1], ctx)), fill(pen[1], ctx)],
+    setInduksi: fill(ind, ctx),
+    aktiviti: [...chosen.map(x => fill(x, ctx)), fill(pen, ctx)],
     bbm: bbm.length ? bbm.join(", ") : "Tiada",
     nilaiMurni: nilai,
     refleksi: refl,
@@ -795,7 +1261,7 @@ DATA SESI
 - Tajuk minggu sebelumnya (untuk pengetahuan sedia ada): ${ctx.prev ? [ctx.prev.unit, ctx.prev.tajuk, ctx.prev.fokus].filter(Boolean).join(" ") : "tiada"}
 - Masa: ${ctx.masa || "-"} (sekitar 2 jam termasuk rehat ringkas)
 - Hari/tarikh: ${meta.hari}, ${meta.tarikhStr}
-- Nota guru: ${ctx.nota || "tiada"}
+- Nota guru: ${ctx.nota || "tiada"}${ctx.induksiId ? "\n- Set induksi WAJIB digunakan (boleh olah ayat sedikit): " + (fill(layersFor(ctx).L.induksi.flat().find(x => x.id === ctx.induksiId) || "", ctx)) : ""}
 
 CONTOH GAYA RPH GURU INI (ikut gaya ayat yang ringkas dan bernombor, bukan isi kandungannya):
 """
@@ -874,7 +1340,7 @@ async function janaSatu(i, meta){
   if(S.tetapan.refleksi === "kosong") h.refleksi = "";
   h.subjek = ctx.subjek; h.masa = ctx.masa; h._ctxId = s.id; h.cuti = ctx.cuti;
   // jejak supaya tak berulang
-  S.jejak.ids = [...h._ids, ...S.jejak.ids].slice(0, 120);
+  S.jejak.ids = [...h._ids, ...S.jejak.ids].slice(0, 3000);
   S.jejak.teks = [h.setInduksi, ...h.aktiviti, ...S.jejak.teks].filter(Boolean).slice(0, 40);
   return { h, nota };
 }
@@ -1037,11 +1503,13 @@ function renderRpt(){
       <td class="num">${esc(w.tA || "")}<br>${esc(w.tB || "")}</td>
       <td>${w.unit ? `<b>${esc(w.unit)}</b><br>` : ""}${jw(w.tajuk)}${w.ms ? `<br><small>MS ${esc(w.ms)}</small>` : ""}${w.fokus ? `<br>${jw(w.fokus)}` : ""}</td>
       <td><ul class="hp-list">${(w.hp||[]).map(h => `<li>${h.k ? `<b>${esc(h.k)}</b> ` : ""}${esc(h.t)}</li>`).join("")}</ul></td>
+      <td class="num">${w.cuti ? "" : (() => { const n = bankCount({ subjek: r.subjek, unit: w.unit, tajuk: w.tajuk, fokus: w.fokus }); return `<button class="btn small" data-bank="${w.m}">${n ? n + " item" : "Tiada"}</button>`; })()}</td>
       <td><button class="btn small" data-edit="${w.m}">Edit</button></td>
     </tr>`).join("");
-  $("#rptTable").innerHTML = `<thead><tr><th>Minggu</th><th>Tarikh<br><small>${ab ? "Ahad–Khamis dipakai" : "Isnin–Jumaat dipakai"}</small></th><th>Kandungan / tajuk</th><th>Hasil pembelajaran</th><th></th></tr></thead><tbody>${rows || `<tr><td colspan="5" class="hint">Belum ada minggu. Tambah secara manual atau import di bawah.</td></tr>`}</tbody>`;
+  $("#rptTable").innerHTML = `<thead><tr><th>Minggu</th><th>Tarikh<br><small>${ab ? "Ahad–Khamis dipakai" : "Isnin–Jumaat dipakai"}</small></th><th>Kandungan / tajuk</th><th>Hasil pembelajaran</th><th>Bank aktiviti</th><th></th></tr></thead><tbody>${rows || `<tr><td colspan="6" class="hint">Belum ada minggu. Tambah secara manual atau import di bawah.</td></tr>`}</tbody>`;
   $$("[data-edit]").forEach(b => b.addEventListener("click", () => { editM = +b.dataset.edit; renderEditor(); }));
-  renderEditor();
+  $$("[data-bank]").forEach(b => b.addEventListener("click", () => { S.bankLihat = +b.dataset.bank; renderBank(); }));
+  renderEditor(); renderBank();
 }
 function renderEditor(){
   const slot = $("#rptEditorSlot");
@@ -1126,6 +1594,86 @@ function normRpt(o){
       cuti: !!w.cuti, hp: (Array.isArray(w.hp) ? w.hp : []).map(h => typeof h === "string" ? { k:"", t:h } : { k: String(h.k || h.kod || ""), t: String(h.t || h.teks || "") }).filter(h => h.t)
     }))
   };
+}
+
+/* Bank aktiviti unit */
+function renderBank(){
+  const slot = $("#bankSlot");
+  const r = aktifRpt();
+  const w = S.bankLihat === null ? null : r.minggu.find(x => x.m === S.bankLihat);
+  if(!w){ slot.innerHTML = ""; return; }
+  const c = { subjek: r.subjek, unit: w.unit, tajuk: w.tajuk, fokus: w.fokus, ms: w.ms, jenis: jenisOf(r.subjek, w.tajuk) };
+  const ub = unitBanks(c);
+  const used = usedMap();
+  const sec = KAT.map(k => {
+    const items = ub.flatMap(b => b[k].map(it => ({ ...it, src: b.src })));
+    if(!items.length) return "";
+    return `<details ${k === "induksi" ? "open" : ""}><summary><b>${KAT_LABEL[k]}</b> <span class="hint">(${items.length})</span></summary>
+      <ol style="margin:6px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:4px">${items.map(it => `<li>${jw(fill(it, c))}${it.b && it.b !== "Tiada" ? ` <small class="hint">· BBM: ${esc(it.b)}</small>` : ""}${used.has(it.id) ? ` <span class="tag">sudah guna</span>` : ""}${it.src === "ai" ? ` <span class="tag">AI</span>` : ""}</li>`).join("")}</ol></details>`;
+  }).join("");
+  slot.innerHTML = `<div class="editor">
+    <div class="prev-bar"><b>Bank aktiviti minggu ${w.m}: ${jw([w.unit, w.tajuk].filter(Boolean).join(" "))}</b><button class="btn small ghost" id="bankTutup">Tutup</button></div>
+    ${sec || `<p class="hint" style="margin:0">Belum ada bank khas untuk tajuk ini. Sistem guna bank umum ${esc(c.jenis)} buat masa ini.</p>`}
+    <div class="actions">
+      <button class="btn small primary" id="bankAi">${ub.length ? "Tambah lagi dengan AI" : "Bina bank dengan AI"}</button>
+      <span class="hint">Sekali bina, kira-kira 8-12 ribu token. Lepas tu jana RPH untuk tajuk ini 0 token.</span>
+    </div>
+    <div class="status" id="statusBank"></div>
+  </div>`;
+  $("#bankTutup").addEventListener("click", () => { S.bankLihat = null; renderBank(); });
+  $("#bankAi").addEventListener("click", () => binaBankAi(r, w));
+}
+async function binaBankAi(r, w){
+  const st = $("#statusBank"); st.className = "status";
+  if(!S.sample){ st.className = "status err"; st.textContent = "AI tidak tersedia di paparan ini."; return; }
+  const c = { subjek: r.subjek, unit: w.unit, tajuk: w.tajuk, fokus: w.fokus, ms: w.ms, jenis: jenisOf(r.subjek, w.tajuk) };
+  const ada = unitBanks(c).flatMap(b => KAT.flatMap(k => b[k].map(it => fill(it, c))));
+  const prompt = `Anda guru Tadika PASTI (Pusat Asuhan Tadika Islam) di Malaysia yang sangat kreatif. Bina BANK AKTIVITI untuk satu tajuk supaya guru boleh mengajar tajuk ini berhari-hari tanpa mengulang aktiviti.
+
+TAJUK
+- Matapelajaran: ${c.subjek}
+- Unit / tajuk: ${[c.unit, c.tajuk].filter(Boolean).join(" ")}
+- Fokus (huruf / suku kata / kandungan): ${c.fokus || "-"}
+- Muka surat buku teks: ${c.ms || "-"}
+- Hasil pembelajaran: ${(w.hp || []).map(h => (h.k ? h.k + " " : "") + h.t).join("; ") || "-"}
+- Umur murid: ${S.tetapan.umur || "4-5 tahun"}
+
+AKTIVITI YANG SUDAH ADA (jangan ulang idea yang sama):
+${ada.length ? ada.slice(0, 120).map(x => "- " + x).join("\n") : "- tiada"}
+
+PERATURAN
+- Bahasa Melayu Malaysia, satu ayat ringkas bagi setiap item, gaya buku rekod guru tadika. Tiada emoji.
+- Sesuai kanak-kanak ${S.tetapan.umur || "4-5 tahun"}: bermain, bergerak, menyanyi, bercerita, deria sentuh, seni. Elak aktiviti menulis yang panjang.
+- Setiap item mesti berbeza jenisnya; jangan sekadar tukar nama permainan.
+- Tulis huruf, suku kata dan perkataan Jawi dalam tulisan Jawi. Pastikan gabungan suku kata tidak membentuk perkataan yang tidak sesuai.
+- Selitkan nilai Islam bila sesuai (doa, adab, salam).
+- "b" ialah bahan bantu mengajar ringkas (cth: "Kad imbas, bola lembut"), atau "Tiada".
+
+Hasilkan: 12 induksi, 8 teras (pengenalan / demonstrasi guru), 16 aktif (permainan dan latihan), 10 kreatif (hasil kerja), 6 penutup.
+Balas JSON SAHAJA:
+{"induksi":[{"t":"...","b":"..."}],"teras":[{"t":"...","b":"..."}],"aktif":[{"t":"...","b":"..."}],"kreatif":[{"t":"...","b":"..."}],"penutup":[{"t":"...","b":""}]}`;
+  $("#bankAi").disabled = true;
+  st.textContent = "AI sedang membina bank aktiviti… (biasanya 30-90 saat)";
+  try{
+    const o = await S.sample.json(prompt, { cache: false, modelTier: "default" });
+    const key = bankKey(c);
+    const doc = S.banks[key] || { key, label: [r.subjek, w.unit, w.tajuk].filter(Boolean).join(" "), f: w.fokus || "", dibuat: Date.now() };
+    let n = 0;
+    KAT.forEach(k => {
+      const lama = doc[k] || [];
+      const baru = (Array.isArray(o[k]) ? o[k] : []).map(x => typeof x === "string" ? { t: x, b: "" } : x).filter(x => x && x.t)
+        .map((x, i) => ({ id: `${key}-${k}-${lama.length + i + 1}`, t: String(x.t), b: String(x.b || "") }));
+      n += baru.length; doc[k] = [...lama, ...baru];
+    });
+    if(!n) throw { code: "invalid_json" };
+    S.banks[key] = doc;
+    await Store.set(key, doc);
+    st.textContent = `${n} aktiviti baharu ditambah ke bank.`;
+    renderRpt(); renderSesi();
+  }catch(e){
+    st.className = "status err";
+    st.textContent = e && e.code === "not_granted" ? "Akses AI tidak dibenarkan." : e && e.code === "invalid_json" ? "Jawapan AI tak lengkap. Cuba sekali lagi." : "Tak berjaya bina bank. Cuba lagi sebentar.";
+  }finally{ const b = $("#bankAi"); if(b) b.disabled = false; }
 }
 
 /* Import RPT dengan AI */
@@ -1218,12 +1766,20 @@ function renderRekod(){
 function renderTetapan(){
   const t = S.tetapan;
   $("#tKelas").value = t.kelas; $("#tKumpulan").value = t.kumpulan; $("#tMasa").value = t.masa.join("\n");
-  $("#tRefleksi").value = t.refleksi; $("#tContoh").value = t.contoh;
+  $("#tRefleksi").value = t.refleksi; $("#tContoh").value = t.contoh; $("#tUmur").value = t.umur || "";
+  $("#jejakInfo").textContent = `${new Set(S.jejak.ids).size} aktiviti sudah digunakan sejak jejak dikosongkan.`;
 }
+$("#btnResetJejak").addEventListener("click", async e => {
+  const b = e.currentTarget;
+  if(b.dataset.ok !== "1"){ b.dataset.ok = "1"; b.textContent = "Tekan sekali lagi untuk kosongkan"; setTimeout(() => { b.dataset.ok = ""; b.textContent = "Mula penggal baharu (kosongkan jejak)"; }, 4000); return; }
+  S.jejak = { ids: [], teks: [] }; b.dataset.ok = ""; b.textContent = "Mula penggal baharu (kosongkan jejak)";
+  try{ await saveJejak(); }catch(err){}
+  renderTetapan(); renderSesi(); toast("Jejak dikosongkan.");
+});
 $("#btnSimpanTetapan").addEventListener("click", async () => {
   const t = S.tetapan;
   t.kelas = $("#tKelas").value.trim() || t.kelas; t.kumpulan = $("#tKumpulan").value;
-  t.masa = $("#tMasa").value.split("\n").map(x => x.trim()).filter(Boolean); t.refleksi = $("#tRefleksi").value;
+  t.masa = $("#tMasa").value.split("\n").map(x => x.trim()).filter(Boolean); t.refleksi = $("#tRefleksi").value; t.umur = $("#tUmur").value.trim() || "4-5 tahun";
   $("#fKelas").value = t.kelas; updateWeekInfo();
   try{ await saveTetapan(); toast("Tetapan disimpan."); }catch(e){ toast("Disimpan dalam pelayar ini sahaja."); }
 });
@@ -1232,7 +1788,7 @@ $("#btnSimpanContoh").addEventListener("click", async () => {
   try{ await saveTetapan(); toast("Contoh RPH disimpan."); }catch(e){ toast("Disimpan dalam pelayar ini sahaja."); }
 });
 $("#btnBackup").addEventListener("click", async () => {
-  const data = JSON.stringify({ versi: 1, rpt: S.rpt, tetapan: S.tetapan, rekod: S.rekod }, null, 2);
+  const data = JSON.stringify({ versi: 2, rpt: S.rpt, tetapan: S.tetapan, rekod: S.rekod, banks: S.banks, jejak: S.jejak }, null, 2);
   if(await simpanFail(`backup-rph-pasti-${toISO(new Date())}.json`, data, "application/json")) $("#statusBackup").textContent = "Backup disimpan.";
 });
 $("#fileRestore").addEventListener("change", async e => {
@@ -1242,6 +1798,8 @@ $("#fileRestore").addEventListener("change", async e => {
     if(Array.isArray(o.rpt)) S.rpt = o.rpt.map(normRpt);
     if(o.tetapan) S.tetapan = { ...DEFAULT_TETAPAN, ...o.tetapan };
     if(Array.isArray(o.rekod)) S.rekod = o.rekod;
+    if(o.jejak && Array.isArray(o.jejak.ids)) { S.jejak = o.jejak; await saveJejak().catch(() => {}); }
+    if(o.banks && typeof o.banks === "object"){ S.banks = o.banks; for(const [k, v] of Object.entries(o.banks)) await Store.set(k, v).catch(() => {}); }
     S.rptAktif = S.rpt[0]?.id;
     await Promise.all([saveRpt(), saveTetapan(), saveRekod()]).catch(() => {});
     renderTetapan(); renderSesi(); updateWeekInfo();
@@ -1286,7 +1844,7 @@ function bootUi(){
       $("#chipAi").classList.toggle("on", !!s);
       $("#chipAiTxt").textContent = s ? "AI: sedia" : "AI: tiada (mod offline)";
       $("#modAi").disabled = !s;
-      if(s) setMod("ai");
+      if(s && S.tetapan.mod === "ai") setMod("ai");
     }).catch(() => { $("#chipAiTxt").textContent = "AI: tiada (mod offline)"; $("#modAi").disabled = true; });
     claude.use("downloads").then(d => { S.downloads = d; }).catch(() => {});
   }
@@ -1299,6 +1857,7 @@ function bootUi(){
   if(tet) S.tetapan = { ...DEFAULT_TETAPAN, ...tet };
   if(rek && Array.isArray(rek.list)) S.rekod = rek.list;
   if(jej && Array.isArray(jej.ids)) S.jejak = { ids: jej.ids, teks: jej.teks || [] };
-  if(rpt || tet){ bootUi(); if(S.sample) setMod("ai"); }
+  S.banks = await Store.list("bank_");
+  bootUi(); setMod(S.tetapan.mod || "off");
 })();
 </script>
