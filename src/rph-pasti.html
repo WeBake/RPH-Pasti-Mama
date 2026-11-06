@@ -1,0 +1,1304 @@
+<title>RPH PASTI Mama</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;600&display=swap">
+<style>
+/* Layout: borang di kiri, "kertas" RPH di kanan (bertindan di telefon). Hijau PASTI + kuning cerah sebagai penanda. */
+:root{
+  --bg:#f2f4ee; --surface:#ffffff; --surface-2:#f7f8f4; --ink:#1b2920; --muted:#5a6a5f; --line:#d6ddd3;
+  --green:#1d6a44; --green-ink:#ffffff; --green-soft:#e2efe6; --sun:#f0bf2c; --sun-soft:#fcf1cc; --sun-ink:#5c4400;
+  --danger:#b3261e; --paper:#ffffff; --paper-ink:#111111; --paper-line:#222222; --shadow:0 1px 2px rgba(20,40,28,.08),0 6px 24px rgba(20,40,28,.08);
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,"Segoe UI",sans-serif;
+  --f-jawi:"Noto Naskh Arabic","Traditional Arabic","Arial",serif;
+  --f-paper:Calibri,Carlito,"Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111712; --surface:#19211b; --surface-2:#1f2921; --ink:#e3ebe5; --muted:#9caca0; --line:#2e3a31;
+  --green:#5fc490; --green-ink:#0c1a11; --green-soft:#1f3326; --sun:#e6b928; --sun-soft:#3a3113; --sun-ink:#f6dd8a;
+  --danger:#ff8a80; --paper:#ffffff; --paper-ink:#111111; --paper-line:#222222; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 24px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111712; --surface:#19211b; --surface-2:#1f2921; --ink:#e3ebe5; --muted:#9caca0; --line:#2e3a31;
+  --green:#5fc490; --green-ink:#0c1a11; --green-soft:#1f3326; --sun:#e6b928; --sun-soft:#3a3113; --sun-ink:#f6dd8a;
+  --danger:#ff8a80; --paper:#ffffff; --paper-ink:#111111; --paper-line:#222222; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 24px rgba(0,0,0,.35); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding-block:12px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:8px 14px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--green);color:var(--green-ink);display:grid;place-items:center;font-family:var(--f-jawi);font-size:22px;font-weight:600;line-height:1}
+.brand h1{font-family:var(--f-display);font-weight:800;font-size:1.35rem;margin:0;letter-spacing:-.01em}
+.brand p{margin:0;color:var(--muted);font-size:.85rem}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:.8rem;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.chip.on .dot{background:var(--green)} .chip.on{color:var(--ink)}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:18px}
+nav.tabs button{appearance:none;border:0;background:none;color:var(--muted);font:inherit;font-weight:700;padding:10px 14px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--sun)}
+nav.tabs button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel h2{font-family:var(--f-display);font-weight:800;font-size:1.05rem;margin:0}
+.panel h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0}
+label{display:flex;flex-direction:column;gap:4px;font-size:.82rem;font-weight:700;color:var(--muted)}
+input,select,textarea{font:inherit;font-weight:400;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:80px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:.8rem;color:var(--muted);margin:0}
+.weekinfo{background:var(--sun-soft);color:var(--sun-ink);border-radius:10px;padding:8px 10px;font-size:.85rem}
+.weekinfo.warn{background:var(--surface-2);color:var(--danger)}
+.sesi{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--surface-2)}
+.sesi-head{display:flex;justify-content:space-between;align-items:center}
+.sesi-head b{font-family:var(--f-display);font-size:.95rem}
+.btn{appearance:none;font:inherit;font-weight:700;border-radius:10px;padding:9px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{border-color:var(--green)}
+.btn.primary{background:var(--green);border-color:var(--green);color:var(--green-ink)}
+.btn.sun{background:var(--sun);border-color:var(--sun);color:#2b2000}
+.btn.ghost{background:none;border-color:transparent;color:var(--muted);padding:4px 8px}
+.btn.danger{color:var(--danger)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.small{padding:5px 10px;font-size:.82rem}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{appearance:none;border:0;background:var(--surface);color:var(--muted);font:inherit;font-weight:700;padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--green);color:var(--green-ink)}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.status{font-size:.88rem;color:var(--muted);min-height:1.3em}
+.status.err{color:var(--danger)}
+
+/* Kertas RPH */
+.paper-wrap{overflow-x:auto;min-width:0;border-radius:6px}
+.paper{background:var(--paper);color:var(--paper-ink);font-family:var(--f-paper);font-size:14px;line-height:1.45;padding:34px 40px;min-width:640px;box-shadow:var(--shadow);border-radius:4px}
+.paper:focus{outline:2px dashed var(--sun);outline-offset:4px}
+.paper .ttl{text-align:center;font-weight:700;font-size:15px;margin:0 0 10px}
+.paper .mg{font-weight:700;margin:0 0 2px 22px}
+.paper table{border-collapse:collapse;width:100%}
+.paper table.rph,.paper table.refl{border:1.5px solid var(--paper-line)}
+.paper table.rph td,.paper table.rph th,.paper table.refl td{border:1px solid var(--paper-line);padding:7px 12px;vertical-align:top;text-align:left}
+.paper table.rph th{font-weight:400;text-align:center}
+.paper table.inner td{border:0!important;padding:0!important}
+.paper td.kiri{width:30%}
+.paper td.kiri p{margin:0 0 12px}
+.paper ol{margin:4px 0 4px 18px;padding-left:18px}
+.paper ol li{margin-bottom:3px}
+.paper .gap{height:22px}
+.paper .refl{margin-top:-1.5px}
+.paper .sp{height:30px}
+.paper .page-break{border-top:1px dashed #bbb;margin:26px 0;height:0}
+.jw{font-family:var(--f-jawi);font-size:1.15em;unicode-bidi:isolate}
+.paper-empty{border:2px dashed var(--line);border-radius:14px;padding:40px 20px;text-align:center;color:var(--muted)}
+.prev-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.tag{font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--sun-soft);color:var(--sun-ink)}
+
+/* RPT */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table.rpt{border-collapse:collapse;width:100%;font-size:.88rem;min-width:720px}
+table.rpt th{background:var(--surface-2);text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line)}
+table.rpt td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.rpt tr.cuti td{background:var(--sun-soft);color:var(--sun-ink)}
+table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.hp-list{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:2px}
+.hp-list b{font-variant-numeric:tabular-nums}
+.editor{border:1px solid var(--green);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--green-soft)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px;align-items:start}
+
+/* Rekod */
+.rekod-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:12px}
+.rk{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.rk b{font-family:var(--f-display)}
+.rk small{color:var(--muted)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:700;font-size:.9rem;z-index:50;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:no-preference){.toast{animation:up .2s ease-out}@keyframes up{from{transform:translate(-50%,8px);opacity:0}}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">ر</div>
+      <div>
+        <h1>RPH PASTI Mama</h1>
+        <p>Rekod Kerja Hari, dijana dari RPT</p>
+      </div>
+    </div>
+    <div class="actions">
+      <span class="chip" id="chipAi"><span class="dot"></span><span id="chipAiTxt">AI: menyemak…</span></span>
+      <span class="chip" id="chipStore"><span class="dot"></span><span id="chipStoreTxt">Simpanan: pelayar</span></span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="jana" aria-selected="true">Jana RPH</button>
+    <button role="tab" data-tab="rpt" aria-selected="false">RPT</button>
+    <button role="tab" data-tab="rekod" aria-selected="false">Rekod</button>
+    <button role="tab" data-tab="tetapan" aria-selected="false">Tetapan</button>
+  </nav>
+
+  <!-- JANA -->
+  <section id="tab-jana">
+    <div class="grid">
+      <form class="panel" id="formJana" autocomplete="off">
+        <h2>Nak RPH untuk bila?</h2>
+        <div class="row">
+          <label>Tarikh<input type="date" id="fTarikh"></label>
+          <label>Kelas<input type="text" id="fKelas" placeholder="6 Jannatun Naim"></label>
+        </div>
+        <div class="weekinfo" id="weekInfo">Pilih tarikh untuk cari minggu dalam RPT.</div>
+
+        <h3>Sesi pada hari itu</h3>
+        <div id="sesiList" style="display:flex;flex-direction:column;gap:10px"></div>
+        <button type="button" class="btn small" id="btnTambahSesi">+ Tambah sesi</button>
+
+        <h3>Cara jana</h3>
+        <div class="actions">
+          <div class="seg" role="group" aria-label="Mod jana">
+            <button type="button" id="modAi" aria-pressed="true">AI (kreatif)</button>
+            <button type="button" id="modOff" aria-pressed="false">Offline</button>
+          </div>
+        </div>
+        <p class="hint" id="modHint">AI karang aktiviti baharu setiap kali dan elak aktiviti yang pernah digunakan dalam rekod anda.</p>
+        <div class="actions">
+          <button type="submit" class="btn primary" id="btnJana">Jana RPH</button>
+          <button type="button" class="btn" id="btnBatal" hidden>Batal</button>
+        </div>
+        <div class="status" id="statusJana" role="status"></div>
+      </form>
+
+      <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div class="prev-bar">
+          <div class="actions" id="regenBar"></div>
+          <div class="actions">
+            <button class="btn small" id="btnWord">Muat turun Word</button>
+            <button class="btn small" id="btnSalin">Salin teks</button>
+            <button class="btn small" id="btnCetak" hidden>Cetak / PDF</button>
+            <button class="btn small sun" id="btnSimpan">Simpan ke Rekod</button>
+          </div>
+        </div>
+        <p class="hint">Kertas di bawah boleh diedit terus. Klik mana-mana ayat untuk ubah sebelum muat turun atau simpan.</p>
+        <div class="paper-wrap"><div class="paper" id="paper" contenteditable="true" spellcheck="false"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RPT -->
+  <section id="tab-rpt" hidden>
+    <div class="cols" style="grid-template-columns:minmax(0,1fr)">
+      <div class="panel">
+        <div class="prev-bar">
+          <h2>Rancangan Pengajaran Tahunan</h2>
+          <div class="actions">
+            <select id="rptPilih" aria-label="Pilih RPT" style="width:auto"></select>
+            <button class="btn small" id="btnRptBaru">+ RPT subjek lain</button>
+          </div>
+        </div>
+        <div class="row" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+          <label>Matapelajaran<input id="rSubjek"></label>
+          <label>Umur / tahap<input id="rTahap"></label>
+          <label>Tahun<input id="rTahun" type="number" min="2020" max="2100"></label>
+        </div>
+        <div class="tbl-wrap"><table class="rpt" id="rptTable"></table></div>
+        <div id="rptEditorSlot"></div>
+        <div class="actions">
+          <button class="btn small" id="btnTambahMinggu">+ Tambah minggu</button>
+          <button class="btn small danger" id="btnPadamRpt">Padam RPT ini</button>
+          <span class="status" id="statusRpt"></span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Masukkan RPT lengkap</h2>
+        <p class="hint">Cara paling mudah: snap gambar setiap muka surat RPT dan muat naik di sini. AI akan baca jadual dan susun ikut minggu. Boleh juga tampal teks dari Word/PDF. Semak hasilnya dalam jadual di atas lepas import.</p>
+        <label>Gambar RPT (boleh pilih beberapa)<input type="file" id="impGambar" accept="image/*" multiple></label>
+        <label>Atau tampal teks RPT<textarea id="impTeks" placeholder="Minggu 8 | 2/3-6/3 | Unit 5 Suku Kata Tertutup | MS 20-24 | 1.6.1 Mengecam ..."></textarea></label>
+        <div class="actions">
+          <button class="btn primary" id="btnImpAi">Baca dengan AI</button>
+          <span class="status" id="statusImp"></span>
+        </div>
+        <div id="impHasil"></div>
+        <details>
+          <summary class="hint" style="cursor:pointer">Import / eksport JSON (untuk backup)</summary>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <textarea id="rptJson" style="min-height:140px;font-family:ui-monospace,monospace;font-size:.8rem"></textarea>
+            <div class="actions">
+              <button class="btn small" id="btnJsonKeluar">Papar JSON RPT ini</button>
+              <button class="btn small" id="btnJsonMasuk">Ganti RPT ini dengan JSON</button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- REKOD -->
+  <section id="tab-rekod" hidden>
+    <div class="panel">
+      <div class="prev-bar"><h2>RPH yang disimpan</h2><span class="hint" id="rekodCount"></span></div>
+      <p class="hint">Aktiviti dalam rekod ini digunakan untuk elak ulangan bila jana RPH baharu.</p>
+      <div class="rekod-list" id="rekodList"></div>
+    </div>
+  </section>
+
+  <!-- TETAPAN -->
+  <section id="tab-tetapan" hidden>
+    <div class="cols">
+      <div class="panel">
+        <h2>Kelas &amp; masa</h2>
+        <label>Nama kelas (default)<input id="tKelas"></label>
+        <label>Minggu persekolahan
+          <select id="tKumpulan">
+            <option value="B">Isnin – Jumaat (tarikh lajur kedua RPT)</option>
+            <option value="A">Ahad – Khamis (tarikh lajur pertama RPT)</option>
+          </select>
+        </label>
+        <label>Masa sesi default (satu baris satu sesi)<textarea id="tMasa"></textarea></label>
+        <label>Refleksi
+          <select id="tRefleksi">
+            <option value="draf">Bagi draf, saya ubah lepas mengajar</option>
+            <option value="kosong">Kosongkan, saya isi sendiri</option>
+          </select>
+        </label>
+        <button class="btn primary small" id="btnSimpanTetapan">Simpan tetapan</button>
+      </div>
+      <div class="panel">
+        <h2>Contoh RPH (gaya penulisan)</h2>
+        <p class="hint">AI ikut gaya ayat dalam contoh ni: ringkas, bernombor, bahasa mudah. Tampal RPH terbaik anda di sini.</p>
+        <textarea id="tContoh" style="min-height:260px"></textarea>
+        <button class="btn small" id="btnSimpanContoh">Simpan contoh</button>
+      </div>
+      <div class="panel">
+        <h2>Backup</h2>
+        <p class="hint">Simpan salinan semua RPT, tetapan dan rekod sebagai fail JSON. Guna bila tukar peranti.</p>
+        <div class="actions">
+          <button class="btn small" id="btnBackup">Eksport semua (JSON)</button>
+        </div>
+        <label>Pulihkan dari backup<input type="file" id="fileRestore" accept="application/json,.json"></label>
+        <div class="status" id="statusBackup"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+/* ===================== DATA ASAS ===================== */
+const HARI = ["Ahad","Isnin","Selasa","Rabu","Khamis","Jumaat","Sabtu"];
+
+const DEFAULT_RPT = [{
+  id: "jawi-6",
+  subjek: "Jawi",
+  tahap: "6 Tahun",
+  tahun: 2026,
+  minggu: [
+    {m:1, fasa:"Fasa 1", bulan:"JAN", tA:"11/1-15/1", tB:"12/1-16/1", unit:"", tajuk:"Minggu Orientasi", ms:"", fokus:"", cuti:false, hp:[{k:"",t:"Taaruf / transisi"}]},
+    {m:2, fasa:"Fasa 1", bulan:"JAN", tA:"18/1-22/1", tB:"19/1-23/1", unit:"", tajuk:"Minggu Transisi", ms:"", fokus:"", cuti:false, hp:[{k:"",t:"Transisi"}]},
+    {m:3, fasa:"Fasa 2", bulan:"JAN", tA:"25/1-29/1", tB:"26/1-30/1", unit:"Unit 1", tajuk:"Huruf Vokal", ms:"3-8", fokus:"ا و ي", cuti:false, hp:[
+      {k:"1.2.3",t:"Menyebut huruf vokal dalam perkataan"},
+      {k:"1.10.1",t:"Mengecam bunyi perkataan diperdengarkan dan menyatakan bunyi pangkal yang sama dan berbeza"}]},
+    {m:4, fasa:"Fasa 2", bulan:"FEB", tA:"1/2-5/2", tB:"2/2-6/2", unit:"Unit 2", tajuk:"Suku Kata", ms:"9-14", fokus:"با بي بو", cuti:false, hp:[
+      {k:"1.10.1",t:"Mengecam bunyi perkataan diperdengarkan dan menyatakan bunyi pangkal yang sama dan berbeza"},
+      {k:"1.4.1",t:"Mengecam dan menyebut satu suku kata terbuka dengan bimbingan guru"},
+      {k:"1.4.2",t:"Mengecam satu suku kata terbuka dan suaikan dengan suku kata yang sama"},
+      {k:"1.4.3",t:"Mengenal pasti dan menyebut satu suku kata terbuka"}]},
+    {m:5, fasa:"Fasa 2", bulan:"FEB", tA:"8/2-12/2", tB:"9/2-13/2", unit:"Unit 3", tajuk:"Suku Kata (vkv)", ms:"15-17", fokus:"", cuti:false, hp:[
+      {k:"1.10.1",t:"Mengecam bunyi perkataan diperdengarkan dan menyatakan bunyi pangkal yang sama dan berbeza"},
+      {k:"1.4.1",t:"Mengecam dan menyebut satu suku kata terbuka dengan bimbingan guru"},
+      {k:"1.4.3",t:"Mengenal pasti dan menyebut satu suku kata terbuka"},
+      {k:"1.5.1",t:"Mengecam dan menyebut suku kata terbuka dan terbuka dengan bimbingan guru"},
+      {k:"1.5.2",t:"Membatangkan kata yang sempurna hasil dari gabungan suku kata terbuka dengan terbuka"}]},
+    {m:6, fasa:"Fasa 2", bulan:"FEB", tA:"15/2-19/2", tB:"16/2-20/2", unit:"", tajuk:"Cuti Tahun Baru Cina / 1 Ramadhan (19/2/2026)", ms:"", fokus:"", cuti:true, hp:[]},
+    {m:7, fasa:"Fasa 2", bulan:"FEB", tA:"22/2-26/2", tB:"23/2-27/2", unit:"Unit 4", tajuk:"Suku Kata", ms:"", fokus:"", cuti:false, hp:[
+      {k:"1.10.1",t:"Mengecam bunyi perkataan diperdengarkan dan menyatakan bunyi pangkal yang sama dan berbeza"},
+      {k:"1.4.1",t:"Mengecam dan menyebut satu suku kata terbuka dengan bimbingan guru"}]}
+  ]
+}];
+
+const DEFAULT_CONTOH = `REKOD KERJA HARI
+Minggu : 1
+Matapelajaran : - Tajuk: Sesi Taaruf | Pengetahuan sedia ada:
+HP: 1. Murid dapat mengenal antara satu sama lain 2. Murid mengetahui peraturan yang ada
+Kelas: 6 Jannatun Naim | Tarikh: 12/1/2026 (Isnin) | Masa: 7.30 pg-9.30 pg | BBM: Tiada | Nilai Murni: Fokus
+Set Induksi : Tayangan Video
+1. Pengenalan awal bagi sesi 2026
+2. Aktiviti ta'ruf bersama murid
+3. Penerangan asas pengurusan diri
+4. Penerangan peraturan semasa di dalam kelas dan premis Pasti
+Refleksi: murid mengikuti dan mendengar sesi pengenalan awal ini
+
+Matapelajaran : Hafazan - Tajuk: Ulangan surah
+HP: 1. Murid dapat mengulang kembali bacaan lepas 2. Murid dapat mewarna dengan baik
+Kelas: 6 Jannatun Naim | Tarikh: 12/1/2026 (Isnin) | Masa: 10.00 pg-12.00 tgh | BBM: Bahan mewarna | Nilai Murni: Fokus, Tekun
+1. Ulangan surah hafazan Al-Fatihah dan 3 Qul
+2. Aktiviti mewarna "Jom ke sekolah"
+Refleksi: murid dapat melakukan aktiviti dengan baik`;
+
+const DEFAULT_TETAPAN = {
+  kelas: "6 Jannatun Naim",
+  kumpulan: "B",
+  masa: ["7.30 pg - 9.30 pg", "10.00 pg - 12.00 tgh"],
+  refleksi: "draf",
+  contoh: DEFAULT_CONTOH
+};
+
+const SUBJEK_LAZIM = ["Jawi","Hafazan","Iqra'","Bahasa Melayu","Bahasa Inggeris","Bahasa Arab","Matematik","Sains","Akidah","Ibadah","Akhlak","Sirah","Kreativiti","Pendidikan Jasmani"];
+
+/* ===================== BANK AKTIVITI (mod offline) ===================== */
+// {f}=fokus, {t}=tajuk, {ms}=muka surat. Setiap item ada id supaya boleh jejak ulangan.
+const BANK = {
+  jawi: {
+    induksi: [
+      ["j-i1","Kotak misteri: guru keluarkan kad {f} satu per satu dari kotak, murid teka dan sebut bunyinya.","Kotak misteri, kad imbas"],
+      ["j-i2","Nyanyian lagu huruf Jawi sambil bertepuk tangan mengikut rentak.","Lagu / pembesar suara"],
+      ["j-i3","Guru bercerita pendek 'Adik pergi ke pasar' dan menekankan perkataan yang bermula dengan bunyi {f}.","Buku cerita bergambar"],
+      ["j-i4","Tayangan video pendek bunyi {f}.","Video, TV / komputer riba"],
+      ["j-i5","Boneka tangan 'Pak Cik Jawi' memberi salam dan memperkenalkan tajuk {t}.","Boneka tangan"],
+      ["j-i6","Guru sorok kad {f} di sekitar kelas. Murid cari dalam masa satu minit dan bawa ke hadapan.","Kad imbas"],
+      ["j-i7","Teka-teki gambar: guru tunjuk separuh gambar objek, murid teka dan sebut bunyi pangkalnya.","Kad gambar"],
+      ["j-i8","Permainan 'Bisik Berantai': guru bisik satu bunyi {f}, murid sampaikan kepada rakan hingga ke hujung barisan.","Tiada"],
+      ["j-i9","Guru bawa objek sebenar (buah, mainan) dalam bakul. Murid sebut nama objek dan guru tekankan bunyi pangkal.","Objek maujud, bakul"]
+    ],
+    teras: [
+      ["j-t1","Guru memperkenalkan {f} menggunakan kad imbas besar. Murid sebut mengikut guru tiga cara: kuat, perlahan dan berbisik.","Kad imbas besar"],
+      ["j-t2","Guru tunjuk cara sebutan {f} dengan jelas. Murid perhati bentuk mulut guru dan ajuk satu per satu.","Cermin kecil"],
+      ["j-t3","Bacaan buku teks {t} muka surat {ms} secara ansur maju: guru baca, murid ikut, kemudian murid baca sendiri.","Buku teks Jawi"],
+      ["j-t4","Guru tulis {f} besar di papan putih. Murid 'tulis di udara' dengan jari mengikut arah tulisan Jawi dari kanan ke kiri.","Papan putih, pen marker"],
+      ["j-t5","Guru gubah lagu ringkas tentang {f} mengikut rentak lagu kanak-kanak yang biasa didengar. Murid nyanyi bersama sambil tunjuk kad.","Kad imbas, lirik lagu"],
+      ["j-t6","Guru sebut perkataan bergambar, murid kenal pasti sama ada bunyi pangkalnya sama atau berbeza dengan {f}.","Kad gambar perkataan"]
+    ],
+    aktif: [
+      ["j-a1","Permainan 'Lompat Huruf': kad {f} diletak di lantai. Guru sebut bunyi, murid lompat ke kad yang betul.","Kad lantai"],
+      ["j-a2","Permainan 'Pancing Kad': murid memancing kad {f} bermagnet dan sebut bunyinya kepada rakan.","Set pancing magnet"],
+      ["j-a3","Aktiviti 'Siapa Cepat' berkumpulan: guru sebut bunyi, wakil kumpulan tepuk kad yang betul di atas meja.","Kad imbas kecil"],
+      ["j-a4","Murid duduk dalam bulatan dan baling bola kecil. Murid yang tangkap bola sebut satu {f} yang ditunjuk guru.","Bola kecil"],
+      ["j-a5","Aktiviti padanan: murid padankan kad {f} dengan gambar perkataan yang bermula dengan bunyi yang sama.","Kad huruf, kad gambar"],
+      ["j-a6","Permainan 'Kereta Api': setiap murid pegang satu kad {f}, bergabung menjadi kereta api dan sebut bunyi kad masing-masing bila 'stesen' dipanggil.","Kad imbas"],
+      ["j-a7","Permainan 'Mana Hilang?': guru susun kad {f}, murid tutup mata, guru ambil satu kad. Murid teka kad yang hilang.","Kad imbas"],
+      ["j-a8","Latihan berpasangan: seorang tunjuk kad, seorang lagi sebut. Kemudian bertukar peranan.","Kad imbas kecil"],
+      ["j-a9","Permainan 'Seluk Kotak': murid seluk tangan, ambil satu kad dan sebut bunyinya dengan kuat.","Kotak, kad"],
+      ["j-a10","Roda putar: guru putar roda berisi {f}. Murid sebut bunyi yang ditunjuk anak panah.","Roda putar"],
+      ["j-a11","Permainan 'Betul atau Salah': guru tunjuk kad dan sebut bunyi. Murid angkat kad senyum jika betul, kad sedih jika salah.","Kad senyum / sedih"],
+      ["j-a12","Permainan 'Patung': murid bergerak ikut lagu. Bila lagu berhenti, guru angkat kad {f} dan murid sebut sebelum boleh bergerak semula.","Lagu, kad imbas"]
+    ],
+    kreatif: [
+      ["j-k1","Murid membentuk {f} menggunakan plastisin dan sebut bunyinya kepada guru.","Plastisin"],
+      ["j-k2","Murid mewarna lembaran kerja {f} dan menyebut setiap bunyi selepas siap.","Lembaran kerja, pensel warna"],
+      ["j-k3","Murid menekap {f} dengan jari di atas dulang pasir.","Dulang pasir"],
+      ["j-k4","Murid tampal cebisan kertas warna pada rangka {f} (kolaj).","Kertas warna, gam"],
+      ["j-k5","Murid menyurih {f} mengikut titik-titik pada lembaran kerja.","Lembaran kerja surih, pensel"],
+      ["j-k6","Murid hias kad {f} dengan pelekat bintang dan bawa pulang untuk dibaca bersama ibu bapa.","Kad kosong, pelekat"],
+      ["j-k7","Murid tulis {f} di papan tulis kecil dan angkat untuk ditunjukkan kepada guru.","Papan tulis kecil, marker"],
+      ["j-k8","Murid susun butang atau biji kacang mengikut bentuk {f}.","Butang / biji kacang, kad rangka"]
+    ],
+    penutup: [
+      ["j-p1","Rumusan: murid sebut semula {f} secara beramai-ramai, berkumpulan dan individu."],
+      ["j-p2","Tiket keluar: setiap murid sebut satu kad {f} sebelum keluar kelas."],
+      ["j-p3","Guru beri pujian dan pelekat bintang kepada murid yang menyebut dengan betul."],
+      ["j-p4","Murid pilih kad {f} kegemaran dan sebut kepada kelas."],
+      ["j-p5","Penutup dengan bacaan doa selepas belajar."]
+    ]
+  },
+  orientasi: {
+    induksi: [
+      ["o-i1","Tayangan video 'Hari Pertama ke Sekolah'.","Video, TV / komputer riba"],
+      ["o-i2","Nyanyian lagu 'Selamat Pagi Cikgu' bersama-sama.","Lagu"],
+      ["o-i3","Boneka tangan menyapa murid dan bertanya nama mereka.","Boneka tangan"],
+      ["o-i4","Guru tunjuk 'beg ajaib' berisi barang sekolah dan murid teka kegunaannya.","Beg, alat tulis"]
+    ],
+    teras: [
+      ["o-t1","Pengenalan awal sesi persekolahan: guru perkenal diri dan rutin harian PASTI.","Carta rutin harian"],
+      ["o-t2","Penerangan peraturan semasa di dalam kelas dan premis PASTI menggunakan kad gambar peraturan.","Kad gambar peraturan"],
+      ["o-t3","Penerangan asas pengurusan diri: susun kasut, letak beg, ke tandas dan basuh tangan.","Gambar langkah pengurusan diri"]
+    ],
+    aktif: [
+      ["o-a1","Aktiviti ta'aruf: murid perkenal nama sambil baling bola kepada rakan.","Bola lembut"],
+      ["o-a2","Lawatan sekitar premis PASTI: tandas, tempat wuduk, kantin dan ruang solat.","Tiada"],
+      ["o-a3","Lakonan ringkas adab masuk kelas: beri salam, susun kasut dan duduk di tempat.","Tiada"],
+      ["o-a4","Latihan rutin pagi: beratur, bacaan doa dan ikrar.","Teks doa"],
+      ["o-a5","Permainan 'Cari Kawan': murid cari rakan yang memakai warna baju sama dan sebut nama rakan itu.","Tiada"]
+    ],
+    kreatif: [
+      ["o-k1","Aktiviti mewarna 'Jom ke Sekolah'.","Lembaran mewarna, pensel warna"],
+      ["o-k2","Murid hias tanda nama sendiri dan pakai sepanjang minggu.","Kad nama, pelekat"],
+      ["o-k3","Cop tangan murid pada 'Pokok Kelas Kami' sebagai tanda ahli kelas.","Cat air, kertas mahjong"],
+      ["o-k4","Murid lukis wajah sendiri dan tampal di papan kenyataan kelas.","Kertas lukisan, krayon"]
+    ],
+    penutup: [
+      ["o-p1","Murid ulang semula tiga peraturan kelas yang diingat."],
+      ["o-p2","Penutup dengan doa dan lagu 'Terima Kasih Cikgu'."],
+      ["o-p3","Guru puji murid yang mengikut rutin dengan baik dan beri pelekat."]
+    ]
+  },
+  hafazan: {
+    induksi: [
+      ["h-i1","Murid dengar audio bacaan {t} oleh qari kanak-kanak.","Audio, pembesar suara"],
+      ["h-i2","Guru bercerita ringkas tentang kelebihan membaca {t}.","Tiada"],
+      ["h-i3","Teka ayat: guru baca awal ayat, murid sambung.","Tiada"],
+      ["h-i4","Tunjuk kad bergambar yang berkaitan maksud ringkas surah.","Kad gambar"]
+    ],
+    teras: [
+      ["h-t1","Talaqqi musyafahah: guru baca {t} ayat demi ayat, murid ikut sambil melihat mulut guru.","Mushaf / kad ayat"],
+      ["h-t2","Ulangan {t} secara beramai-ramai, kemudian berkumpulan.","Tiada"],
+      ["h-t3","Bacaan berirama {t} dengan isyarat tangan bagi setiap ayat.","Tiada"]
+    ],
+    aktif: [
+      ["h-a1","Permainan 'Sambung Ayat': guru baca separuh ayat, murid yang ditunjuk sambung.","Tiada"],
+      ["h-a2","Bacaan bergilir mengikut barisan: barisan pertama ayat 1, barisan kedua ayat 2 dan seterusnya.","Tiada"],
+      ["h-a3","Murid susun kad ayat {t} mengikut tertib.","Kad ayat"],
+      ["h-a4","Bacaan individu kepada guru (tasmik) secara bergilir.","Rekod tasmik"],
+      ["h-a5","Bacaan 'kuat-perlahan': guru angkat kad besar, murid baca kuat; kad kecil, murid baca perlahan.","Kad besar / kecil"]
+    ],
+    kreatif: [
+      ["h-k1","Aktiviti mewarna gambar bertema surah yang dihafaz.","Lembaran mewarna, pensel warna"],
+      ["h-k2","Murid tampal pelekat bintang pada carta hafazan bagi surah yang lancar.","Carta hafazan, pelekat"],
+      ["h-k3","Murid hias penanda buku bertulis nama surah.","Kad penanda buku, krayon"]
+    ],
+    penutup: [
+      ["h-p1","Bacaan beramai-ramai {t} sekali lagi sebagai penutup."],
+      ["h-p2","Doa selepas belajar dan pujian kepada murid yang lancar."],
+      ["h-p3","Guru maklumkan surah ulangan untuk dibaca di rumah bersama ibu bapa."]
+    ]
+  },
+  umum: {
+    induksi: [
+      ["u-i1","Soal jawab ringkas berkaitan {t} menggunakan gambar.","Kad gambar"],
+      ["u-i2","Tayangan video pendek berkaitan {t}.","Video, TV / komputer riba"],
+      ["u-i3","Nyanyian lagu berkaitan {t}.","Lagu"],
+      ["u-i4","Kotak misteri berisi objek berkaitan {t}. Murid teka isi kotak.","Kotak, objek maujud"],
+      ["u-i5","Boneka tangan bercerita ringkas tentang {t}.","Boneka tangan"]
+    ],
+    teras: [
+      ["u-t1","Guru terangkan {t} menggunakan kad imbas dan contoh mudah.","Kad imbas"],
+      ["u-t2","Demonstrasi oleh guru berkaitan {t}, murid perhati dan ajuk.","Bahan demonstrasi"],
+      ["u-t3","Bacaan buku teks / modul {t} bersama guru.","Buku teks / modul"]
+    ],
+    aktif: [
+      ["u-a1","Aktiviti berkumpulan: murid susun kad mengikut kategori berkaitan {t}.","Kad aktiviti"],
+      ["u-a2","Permainan 'Siapa Cepat' berkaitan {t}.","Kad soalan"],
+      ["u-a3","Main peranan ringkas berkaitan {t}.","Prop ringkas"],
+      ["u-a4","Permainan bola beracun: murid yang pegang bola bila lagu berhenti jawab soalan guru tentang {t}.","Bola, lagu"],
+      ["u-a5","Aktiviti padanan gambar dan perkataan berkaitan {t}.","Kad gambar, kad perkataan"]
+    ],
+    kreatif: [
+      ["u-k1","Murid siapkan lembaran kerja berkaitan {t}.","Lembaran kerja"],
+      ["u-k2","Murid lukis dan warna gambar berkaitan {t}.","Kertas lukisan, krayon"],
+      ["u-k3","Murid hasilkan kolaj ringkas bertema {t}.","Kertas warna, gam, gunting"]
+    ],
+    penutup: [
+      ["u-p1","Rumusan: murid ceritakan semula apa yang dipelajari tentang {t}."],
+      ["u-p2","Guru beri pujian dan penghargaan kepada murid."],
+      ["u-p3","Penutup dengan doa selepas belajar."]
+    ]
+  }
+};
+const NILAI = ["Fokus","Tekun","Bekerjasama","Hormat-menghormati","Sabar","Yakin diri","Bersyukur","Berdisiplin","Kasih sayang","Bertanggungjawab","Menjaga kebersihan","Berani mencuba"];
+
+/* ===================== UTIL ===================== */
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const AR = /[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]+(?:[\s،]+[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]+)*/g;
+const jw = s => esc(s).replace(AR, m => `<span class="jw" dir="rtl">${m}</span>`);
+const uid = () => Math.random().toString(36).slice(2, 10);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function toast(msg){ const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2600); }
+function fmtTarikh(d){ return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`; }
+function parseISO(v){ if(!v) return null; const [y,m,d] = v.split("-").map(Number); return new Date(y, m-1, d); }
+function toISO(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function rangeOf(str, tahun){
+  // "26/1-30/1" -> [Date, Date]
+  const m = String(str||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})(?:\s*\/\s*(\d{2,4}))?\s*[-–]\s*(\d{1,2})\s*\/\s*(\d{1,2})(?:\s*\/\s*(\d{2,4}))?/);
+  if(!m) return null;
+  const y1 = m[3] ? +(m[3].length===2 ? "20"+m[3] : m[3]) : tahun;
+  const y2 = m[6] ? +(m[6].length===2 ? "20"+m[6] : m[6]) : (+m[5] < +m[2] ? tahun+1 : y1);
+  return [new Date(y1, +m[2]-1, +m[1]), new Date(y2, +m[5]-1, +m[4])];
+}
+
+/* ===================== SIMPANAN ===================== */
+const Store = {
+  mode: "local", col: null,
+  async init(){
+    try{
+      if(!window.claude || !claude.use) return;
+      const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+      if(!db || !user) return;
+      const id = await user.id();
+      if(!id) return;
+      this.col = db.collection("data/users/" + id);
+      this.mode = "db";
+    }catch(e){ this.mode = "local"; }
+  },
+  async get(k){
+    if(this.mode === "db"){
+      try{ const s = await this.col.doc(k).get(); if(s.exists) return s.data(); }catch(e){}
+    }
+    try{ const v = localStorage.getItem("rphpasti:" + k); return v ? JSON.parse(v) : null; }catch(e){ return null; }
+  },
+  async set(k, v){
+    try{ localStorage.setItem("rphpasti:" + k, JSON.stringify(v)); }catch(e){}
+    if(this.mode === "db"){ await this.col.doc(k).set(v); }
+  }
+};
+
+/* ===================== STATE ===================== */
+const S = {
+  rpt: structuredClone(DEFAULT_RPT),
+  tetapan: structuredClone(DEFAULT_TETAPAN),
+  rekod: [],
+  jejak: { ids: [], teks: [] },
+  rptAktif: "jawi-6",
+  sesi: [],          // borang sesi
+  hasil: [],         // hasil jana bagi setiap sesi
+  meta: null,        // {tarikh, hari, minggu, kelas}
+  mod: "ai",
+  sample: null,
+  downloads: null,
+  sedangJana: false,
+  ctl: null,
+  contohDipaparkan: false
+};
+
+async function saveRpt(){ await Store.set("rpt", { list: S.rpt }); }
+async function saveTetapan(){ await Store.set("tetapan", S.tetapan); }
+async function saveRekod(){ await Store.set("rekod", { list: S.rekod }); }
+async function saveJejak(){ await Store.set("jejak", S.jejak); }
+
+/* ===================== RPT HELPERS ===================== */
+function rptBySubjek(subjek){
+  const s = String(subjek||"").trim().toLowerCase();
+  return S.rpt.find(r => r.subjek.trim().toLowerCase() === s) || null;
+}
+function weekDates(r, w){
+  const str = S.tetapan.kumpulan === "A" ? (w.tA || w.tB) : (w.tB || w.tA);
+  return rangeOf(str, +r.tahun || new Date().getFullYear());
+}
+function findWeek(r, date){
+  if(!r || !date) return null;
+  for(const w of r.minggu){
+    const rg = weekDates(r, w); if(!rg) continue;
+    const end = new Date(rg[1]); end.setHours(23,59,59);
+    // tolerate the weekend just before/after the school week
+    const start = new Date(rg[0]); start.setDate(start.getDate() - 1);
+    if(date >= start && date <= end) return w;
+  }
+  return null;
+}
+function prevWeek(r, w){
+  if(!r || !w) return null;
+  const sorted = r.minggu.filter(x => !x.cuti && x.m < w.m).sort((a,b) => b.m - a.m);
+  return sorted[0] || null;
+}
+function weekLabel(w){
+  return `M${w.m} · ${[w.unit, w.tajuk].filter(Boolean).join(" ")}${w.ms ? ` (MS ${w.ms})` : ""}${w.cuti ? " · CUTI" : ""}`;
+}
+function jenisOf(subjek, tajuk){
+  const t = (subjek + " " + tajuk).toLowerCase();
+  if(/orientasi|transisi|taaruf|ta'aruf|ta’aruf/.test(t)) return "orientasi";
+  if(/hafaz|surah|qul|fatihah|tasmik|al-quran|quran/.test(t)) return "hafazan";
+  if(/jawi/.test(t)) return "jawi";
+  return "umum";
+}
+
+/* ===================== UI: TABS ===================== */
+$$("nav.tabs button").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+function showTab(name){
+  $$("nav.tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === name)));
+  ["jana","rpt","rekod","tetapan"].forEach(n => $("#tab-" + n).hidden = n !== name);
+  if(name === "rpt") renderRpt();
+  if(name === "rekod") renderRekod();
+  if(name === "tetapan") renderTetapan();
+}
+
+/* ===================== UI: BORANG JANA ===================== */
+function defaultSesi(i){
+  const masa = S.tetapan.masa[i] || "";
+  return { id: uid(), masa, subjek: i === 0 ? (S.rpt[0]?.subjek || "Jawi") : "Hafazan", mingguM: "", tajukBebas: i === 0 ? "" : "Ulangan surah Al-Fatihah dan 3 Qul", nota: "" };
+}
+
+function renderSesi(){
+  const list = $("#sesiList");
+  list.innerHTML = "";
+  const dl = `<datalist id="dlSubjek">${[...new Set([...S.rpt.map(r=>r.subjek), ...SUBJEK_LAZIM])].map(s=>`<option value="${esc(s)}">`).join("")}</datalist>`;
+  list.insertAdjacentHTML("beforeend", dl);
+  S.sesi.forEach((s, i) => {
+    const r = rptBySubjek(s.subjek);
+    const opts = r ? r.minggu.map(w => `<option value="${w.m}" ${String(w.m)===String(s.mingguM)?"selected":""}>${esc(weekLabel(w))}</option>`).join("") : "";
+    const el = document.createElement("div");
+    el.className = "sesi";
+    el.innerHTML = `
+      <div class="sesi-head"><b>Sesi ${i+1}</b>${S.sesi.length > 1 ? `<button type="button" class="btn ghost small" data-buang="${s.id}">Buang</button>` : ""}</div>
+      <div class="row">
+        <label>Masa<input id="masa-${s.id}" value="${esc(s.masa)}" data-f="masa"></label>
+        <label>Matapelajaran<input id="subj-${s.id}" list="dlSubjek" value="${esc(s.subjek)}" data-f="subjek"></label>
+      </div>
+      ${r ? `<label>Tajuk dari RPT ${esc(r.subjek)}<select id="mg-${s.id}" data-f="mingguM"><option value="">— ikut tarikh —</option>${opts}</select></label>` : ""}
+      <label>${r ? "Atau taip tajuk sendiri (kosongkan untuk guna RPT)" : "Tajuk"}<input id="tb-${s.id}" value="${esc(s.tajukBebas)}" data-f="tajukBebas" placeholder="cth: Ulangan surah An-Nas"></label>
+      <label>Nota untuk AI (pilihan)<input id="nt-${s.id}" value="${esc(s.nota)}" data-f="nota" placeholder="cth: guna lagu, ada 3 murid baru, murid suka permainan luar"></label>`;
+    el.addEventListener("input", e => {
+      const f = e.target.dataset.f; if(!f) return;
+      s[f] = e.target.value;
+    });
+    el.addEventListener("change", e => { const f = e.target.dataset.f; if(f) { s[f] = e.target.value; if(f==="subjek") renderSesi(); } });
+    list.appendChild(el);
+  });
+  $$("[data-buang]", list).forEach(b => b.addEventListener("click", () => {
+    S.sesi = S.sesi.filter(x => x.id !== b.dataset.buang); renderSesi();
+  }));
+}
+
+$("#btnTambahSesi").addEventListener("click", () => { S.sesi.push(defaultSesi(S.sesi.length)); S.sesi[S.sesi.length-1].tajukBebas = ""; renderSesi(); });
+
+function updateWeekInfo(){
+  const d = parseISO($("#fTarikh").value);
+  const box = $("#weekInfo");
+  if(!d){ box.className = "weekinfo"; box.textContent = "Pilih tarikh untuk cari minggu dalam RPT."; return; }
+  const r = rptBySubjek(S.sesi[0]?.subjek) || S.rpt[0];
+  const w = findWeek(r, d);
+  const hari = HARI[d.getDay()];
+  if(!w){
+    box.className = "weekinfo warn";
+    box.textContent = `${hari}, ${fmtTarikh(d)}: tarikh ni tiada dalam RPT ${r ? r.subjek : ""}. Pilih tajuk secara manual dalam sesi di bawah, atau tambah minggu dalam tab RPT.`;
+    return;
+  }
+  box.className = w.cuti ? "weekinfo warn" : "weekinfo";
+  box.innerHTML = `${esc(hari)}, ${esc(fmtTarikh(d))} · <b>Minggu ${w.m}</b>: ${jw([w.unit, w.tajuk].filter(Boolean).join(" "))}${w.fokus ? " " + jw(w.fokus) : ""}${w.cuti ? " (minggu cuti)" : ""}`;
+}
+$("#fTarikh").addEventListener("change", updateWeekInfo);
+
+/* Mod AI / Offline */
+function setMod(m){
+  if(m === "ai" && !S.sample) m = "off";
+  S.mod = m;
+  $("#modAi").setAttribute("aria-pressed", String(m === "ai"));
+  $("#modOff").setAttribute("aria-pressed", String(m === "off"));
+  $("#modHint").textContent = m === "ai"
+    ? "AI karang aktiviti baharu setiap kali dan elak aktiviti yang pernah digunakan dalam rekod anda."
+    : "Enjin offline pilih dari bank aktiviti terbina dan elak yang baru digunakan. Laju dan percuma, tapi kurang variasi berbanding AI.";
+}
+$("#modAi").addEventListener("click", () => setMod("ai"));
+$("#modOff").addEventListener("click", () => setMod("off"));
+
+/* ===================== KONTEKS SESI ===================== */
+function buildCtx(s, d){
+  const r = rptBySubjek(s.subjek);
+  let w = null;
+  if(r){
+    if(s.mingguM) w = r.minggu.find(x => String(x.m) === String(s.mingguM)) || null;
+    if(!w) w = findWeek(r, d);
+  }
+  const bebas = (s.tajukBebas || "").trim();
+  const ctx = {
+    subjek: (s.subjek || "").trim(),
+    masa: s.masa, nota: (s.nota || "").trim(),
+    tajuk: bebas || (w ? w.tajuk : ""),
+    unit: bebas ? "" : (w?.unit || ""),
+    ms: bebas ? "" : (w?.ms || ""),
+    fokus: bebas ? "" : (w?.fokus || ""),
+    hp: bebas ? [] : (w?.hp || []),
+    cuti: !bebas && !!w?.cuti,
+    minggu: w?.m || null,
+    prev: (!bebas && w) ? prevWeek(r, w) : null,
+    tahap: r?.tahap || "6 Tahun"
+  };
+  ctx.jenis = jenisOf(ctx.subjek, ctx.tajuk);
+  return ctx;
+}
+
+function recentUsed(){
+  const out = [];
+  for(const r of S.rekod.slice(0, 12)){
+    for(const h of (r.hasil || [])){
+      if(h.setInduksi) out.push(h.setInduksi);
+      (h.aktiviti || []).forEach(a => out.push(a));
+    }
+  }
+  return [...new Set([...S.jejak.teks, ...out])].slice(0, 60);
+}
+
+/* ===================== ENJIN OFFLINE ===================== */
+function namaTajuk(ctx){
+  let t = ctx.tajuk || "tajuk hari ini";
+  if(ctx.jenis === "hafazan") t = t.replace(/^(ulangan|hafazan|bacaan)\s+/i, "");
+  return t;
+}
+function fill(tpl, ctx){
+  const f = ctx.fokus || ctx.tajuk || "tajuk hari ini";
+  return tpl.replaceAll("{f}", f).replaceAll("{t}", namaTajuk(ctx)).replaceAll("{ms}", ctx.ms || "berkaitan");
+}
+function pick(arr, n, used){
+  const fresh = shuffle(arr.filter(x => !used.has(x[0])));
+  const old = shuffle(arr.filter(x => used.has(x[0])));
+  return [...fresh, ...old].slice(0, n);
+}
+function hpAyat(t){
+  const s = String(t).trim().replace(/\.$/, "");
+  if(/^murid/i.test(s)) return s + ".";
+  return "Murid dapat " + s.charAt(0).toLowerCase() + s.slice(1) + ".";
+}
+function janaOffline(ctx){
+  const bank = BANK[ctx.jenis] || BANK.umum;
+  const used = new Set(S.jejak.ids);
+  const ind = pick(bank.induksi, 1, used)[0];
+  const ter = pick(bank.teras, 1, used)[0];
+  const akt = pick(bank.aktif, 2, used);
+  const kre = pick(bank.kreatif, 1, used)[0];
+  const pen = pick(bank.penutup, 1, used)[0];
+  const chosen = [ter, ...akt, kre].filter(Boolean);
+  const ids = [ind, ...chosen, pen].filter(Boolean).map(x => x[0]);
+  const bbm = [...new Set([ind, ...chosen].map(x => x && x[2]).filter(b => b && b !== "Tiada"))];
+  if(ctx.ms && ctx.jenis === "jawi") bbm.unshift(`Buku teks ${ctx.subjek} ms ${ctx.ms}`);
+  let hp = ctx.hp.length ? ctx.hp.slice(0, 3).map(h => hpAyat(h.t)) : [];
+  if(!hp.length){
+    hp = ctx.jenis === "orientasi"
+      ? ["Murid dapat mengenal antara satu sama lain.","Murid mengetahui peraturan yang ada."]
+      : ctx.jenis === "hafazan"
+      ? [`Murid dapat mengulang kembali bacaan ${namaTajuk(ctx)} dengan lancar.`, "Murid dapat mengikut bacaan guru dengan sebutan yang betul."]
+      : [`Murid dapat menyatakan perkara asas tentang ${ctx.tajuk || "tajuk"}.`, "Murid dapat melibatkan diri dalam aktiviti dengan baik."];
+  }
+  const psa = ctx.jenis === "orientasi" ? "Murid baru memulakan sesi persekolahan."
+    : ctx.prev && jenisOf(ctx.subjek, ctx.prev.tajuk) === "orientasi" ? "Murid sudah biasa dengan rutin kelas dan pernah melihat huruf Jawi."
+    : ctx.prev ? `Murid telah mempelajari ${[ctx.prev.unit, ctx.prev.tajuk].filter(Boolean).join(" ")}${ctx.prev.fokus ? " (" + ctx.prev.fokus + ")" : ""}.`
+    : ctx.jenis === "hafazan" ? "Murid pernah mendengar bacaan surah ini." : "Murid pernah melihat dan mendengar perkara berkaitan tajuk ini.";
+  const nilai = shuffle(NILAI).slice(0, 2).join(", ");
+  const fk = ctx.fokus || ctx.tajuk || "tajuk hari ini";
+  const refl = ctx.jenis === "orientasi"
+    ? "__ / __ murid mengikuti sesi dengan baik. __ murid masih perlukan bimbingan untuk ikut rutin."
+    : ctx.jenis === "hafazan" ? `__ / __ murid dapat membaca ${namaTajuk(ctx)} dengan lancar. __ murid perlukan tasmik tambahan.`
+    : `__ / __ murid dapat menguasai ${fk} dengan baik. __ murid perlukan bimbingan lanjut.`;
+  return {
+    tajuk: ctx.tajuk || "-",
+    pengetahuanSediaAda: psa,
+    hp,
+    setInduksi: fill(ind[1], ctx),
+    aktiviti: [...chosen.map(x => fill(x[1], ctx)), fill(pen[1], ctx)],
+    bbm: bbm.length ? bbm.join(", ") : "Tiada",
+    nilaiMurni: nilai,
+    refleksi: refl,
+    _ids: ids,
+    _sumber: "offline"
+  };
+}
+
+/* ===================== ENJIN AI ===================== */
+function promptAi(ctx, meta){
+  const used = recentUsed();
+  const lain = S.hasil.filter(Boolean).filter(h => h._ctxId !== ctx._id).flatMap(h => [h.setInduksi, ...(h.aktiviti||[])]);
+  return `Anda guru Tadika PASTI (Pusat Asuhan Tadika Islam) di Malaysia yang berpengalaman. Tulis SATU Rekod Kerja Hari (RPH) untuk satu sesi pengajaran bagi murid ${ctx.tahap}.
+
+DATA SESI
+- Matapelajaran: ${ctx.subjek || "-"}
+- Tajuk: ${[ctx.unit, ctx.tajuk].filter(Boolean).join(" ") || "-"}
+- Fokus (huruf/suku kata/kandungan): ${ctx.fokus || "-"}
+- Muka surat buku teks: ${ctx.ms || "-"}
+- Hasil pembelajaran dari RPT: ${ctx.hp.length ? ctx.hp.map(h => (h.k ? h.k + " " : "") + h.t).join("; ") : "tiada, bina sendiri yang sesuai"}
+- Tajuk minggu sebelumnya (untuk pengetahuan sedia ada): ${ctx.prev ? [ctx.prev.unit, ctx.prev.tajuk, ctx.prev.fokus].filter(Boolean).join(" ") : "tiada"}
+- Masa: ${ctx.masa || "-"} (sekitar 2 jam termasuk rehat ringkas)
+- Hari/tarikh: ${meta.hari}, ${meta.tarikhStr}
+- Nota guru: ${ctx.nota || "tiada"}
+
+CONTOH GAYA RPH GURU INI (ikut gaya ayat yang ringkas dan bernombor, bukan isi kandungannya):
+"""
+${(S.tetapan.contoh || DEFAULT_CONTOH).slice(0, 3000)}
+"""
+
+AKTIVITI YANG SUDAH DIGUNAKAN SEBELUM INI (JANGAN ulang idea yang sama atau hampir sama):
+${used.length ? used.map(u => "- " + u).join("\n") : "- tiada lagi"}
+${lain.length ? "\nAKTIVITI SESI LAIN PADA HARI YANG SAMA (jangan ulang):\n" + lain.map(u => "- " + u).join("\n") : ""}
+
+PERATURAN
+- Bahasa Melayu Malaysia yang mudah, ayat pendek macam guru tadika tulis dalam buku rekod. Tiada emoji.
+- Aktiviti sesuai kanak-kanak ${ctx.tahap}: banyak bergerak, bermain, menyanyi, hands-on, dan diselitkan nilai Islam bila sesuai.
+- Kreatif dan pelbagai: pilih gabungan berbeza (contoh permainan, lagu, cerita, boneka, objek maujud, seni, gerakan, berpasangan, berkumpulan). Setiap kali mesti nampak baharu.
+- Tulis huruf/suku kata/perkataan Jawi dalam tulisan Jawi.
+- "hp": 2 hingga 3 ayat bermula "Murid dapat ...", diterbitkan dari hasil pembelajaran RPT.
+- "setInduksi": satu ayat aktiviti pembuka yang menarik (bukan sekadar "soal jawab").
+- "aktiviti": 4 hingga 6 langkah berurutan, setiap satu satu ayat ringkas, langkah akhir ialah penutup/rumusan.
+- "bbm": senarai bahan bantu mengajar yang benar-benar digunakan dalam aktiviti, dipisah koma.
+- "nilaiMurni": 1 hingga 2 nilai, dipisah koma.
+- "refleksi": draf satu ayat dengan ruang "__ / __ murid" untuk guru isi selepas mengajar.
+
+Balas dengan JSON SAHAJA dalam bentuk ini:
+{"tajuk":"...","pengetahuanSediaAda":"...","hp":["Murid dapat ..."],"setInduksi":"...","aktiviti":["..."],"bbm":"...","nilaiMurni":"...","refleksi":"..."}`;
+}
+async function janaAi(ctx, meta){
+  const res = await S.sample.json(promptAi(ctx, meta), { cache: false, signal: S.ctl?.signal, modelTier: "default" });
+  if(!res || typeof res !== "object" || !Array.isArray(res.aktiviti)) throw { code: "invalid_json", message: "Format tak dijangka" };
+  const arr = v => Array.isArray(v) ? v.map(String).filter(Boolean) : String(v||"").split(/\n+/).filter(Boolean);
+  return {
+    tajuk: String(res.tajuk || ctx.tajuk || "-"),
+    pengetahuanSediaAda: String(res.pengetahuanSediaAda || ""),
+    hp: arr(res.hp).slice(0, 4),
+    setInduksi: String(res.setInduksi || ""),
+    aktiviti: arr(res.aktiviti).slice(0, 8),
+    bbm: String(res.bbm || "Tiada"),
+    nilaiMurni: String(res.nilaiMurni || "Fokus"),
+    refleksi: String(res.refleksi || ""),
+    _ids: [], _sumber: "ai"
+  };
+}
+function errCopy(e){
+  switch(e && e.code){
+    case "not_granted": return "Akses AI tidak dibenarkan untuk halaman ini, jadi saya guna enjin offline.";
+    case "rate_limited": return "AI sibuk sekejap (terlalu banyak permintaan). Saya guna enjin offline untuk sesi ini.";
+    case "invalid_json": return "Jawapan AI tak lengkap. Saya guna enjin offline untuk sesi ini; cuba 'Jana semula' sekejap lagi.";
+    case "sampling_disabled": case "capability_disabled": return "AI dimatikan untuk akaun ini. Saya guna enjin offline.";
+    default: return "AI tak dapat jana sekarang. Saya guna enjin offline untuk sesi ini.";
+  }
+}
+
+/* ===================== JANA ===================== */
+function readMeta(){
+  const d = parseISO($("#fTarikh").value) || new Date();
+  const r = rptBySubjek(S.sesi[0]?.subjek) || S.rpt[0];
+  const w = findWeek(r, d);
+  return { tarikh: toISO(d), tarikhStr: fmtTarikh(d), hari: HARI[d.getDay()], minggu: w ? w.m : "", kelas: $("#fKelas").value.trim() || S.tetapan.kelas };
+}
+
+async function janaSatu(i, meta){
+  const s = S.sesi[i];
+  const ctx = buildCtx(s, parseISO(meta.tarikh));
+  ctx._id = s.id;
+  let h, nota = "";
+  if(S.mod === "ai" && S.sample){
+    try{ h = await janaAi(ctx, meta); }
+    catch(e){
+      if(e && e.code === "cancelled") throw e;
+      if(e && (e.code === "not_granted" || e.code === "sampling_disabled" || e.code === "capability_disabled")) setMod("off");
+      nota = errCopy(e);
+      h = janaOffline(ctx);
+    }
+  } else {
+    h = janaOffline(ctx);
+  }
+  if(S.tetapan.refleksi === "kosong") h.refleksi = "";
+  h.subjek = ctx.subjek; h.masa = ctx.masa; h._ctxId = s.id; h.cuti = ctx.cuti;
+  // jejak supaya tak berulang
+  S.jejak.ids = [...h._ids, ...S.jejak.ids].slice(0, 120);
+  S.jejak.teks = [h.setInduksi, ...h.aktiviti, ...S.jejak.teks].filter(Boolean).slice(0, 40);
+  return { h, nota };
+}
+
+async function jana(onlyIndex){
+  if(S.sedangJana) return;
+  S.sedangJana = true;
+  S.ctl = new AbortController();
+  const st = $("#statusJana");
+  st.className = "status";
+  $("#btnJana").disabled = true; $("#btnBatal").hidden = false;
+  const meta = readMeta();
+  if(onlyIndex === undefined){ S.meta = meta; S.hasil = new Array(S.sesi.length).fill(null); }
+  const idxs = onlyIndex === undefined ? S.sesi.map((_, i) => i) : [onlyIndex];
+  const notes = [];
+  try{
+    for(const i of idxs){
+      st.textContent = S.mod === "ai" ? `AI sedang menulis sesi ${i+1} daripada ${S.sesi.length}… (biasanya 10–40 saat)` : `Menjana sesi ${i+1}…`;
+      const { h, nota } = await janaSatu(i, S.meta || meta);
+      if(nota) notes.push(`Sesi ${i+1}: ${nota}`);
+      S.hasil[i] = h;
+      S.contohDipaparkan = false;
+      renderPaper();
+    }
+    saveJejak().catch(() => {});
+    st.textContent = notes.length ? notes.join(" ") : "Siap. Semak dan edit terus pada kertas jika perlu.";
+    if(notes.length) st.className = "status err";
+  }catch(e){
+    st.textContent = e && e.code === "cancelled" ? "Dibatalkan." : "Ada masalah semasa menjana. Cuba lagi.";
+    st.className = "status err";
+  }finally{
+    S.sedangJana = false; S.ctl = null;
+    $("#btnJana").disabled = false; $("#btnBatal").hidden = true;
+  }
+}
+$("#formJana").addEventListener("submit", e => { e.preventDefault(); jana(); });
+$("#btnBatal").addEventListener("click", () => S.ctl?.abort());
+
+/* ===================== RENDER KERTAS ===================== */
+function sesiHtml(h, meta){
+  const hpTxt = (h.hp || []).map((x, i) => `${i+1}. ${jw(x)}`).join(" ");
+  const akt = (h.aktiviti || []).map(a => `<li>${jw(a)}</li>`).join("");
+  return `
+<table class="rph" style="border-collapse:collapse;width:100%">
+  <tr><td colspan="2">
+    <table class="inner" style="width:100%;border-collapse:collapse"><tr>
+      <td style="width:55%"><b>Matapelajaran :</b> ${jw(h.subjek || "")} - <b>Tajuk:</b> ${jw(h.tajuk || "")}</td>
+      <td><b>Pengetahuan sedia ada:</b> ${jw(h.pengetahuanSediaAda || "")}</td>
+    </tr></table>
+    <div style="margin-top:4px"><b>HP:</b> ${hpTxt}</div>
+  </td></tr>
+  <tr><th>Kelas, tarikh, masa,BBM</th><th>Aktiviti</th></tr>
+  <tr>
+    <td class="kiri" rowspan="2" style="width:30%">
+      <p>Kelas: ${esc(meta.kelas)}</p>
+      <p>Tarikh: ${esc(meta.tarikhStr)}<br>(${esc(meta.hari)})<br>Masa: ${esc(h.masa || "")}</p>
+      <p>BBM: ${jw(h.bbm || "Tiada")}</p>
+      <p>Nilai Murni: ${esc(h.nilaiMurni || "")}</p>
+    </td>
+    <td><b>Set Induksi :</b> ${jw(h.setInduksi || "")}</td>
+  </tr>
+  <tr><td><ol>${akt}</ol></td></tr>
+</table>
+<table class="refl" style="border-collapse:collapse;width:100%"><tr><td style="height:56px"><b>Refleksi:</b>&nbsp;&nbsp;&nbsp; ${jw(h.refleksi || "")}</td></tr></table>`;
+}
+function renderPaper(){
+  const p = $("#paper");
+  const ada = S.hasil.filter(Boolean);
+  if(!ada.length || !S.meta){
+    p.innerHTML = `<div class="paper-empty" contenteditable="false">Isi borang di sebelah dan tekan <b>Jana RPH</b>.</div>`;
+    renderRegenBar();
+    return;
+  }
+  const blocks = S.hasil.map(h => h ? sesiHtml(h, S.meta) : `<p style="color:#888">Sesi sedang dijana…</p>`);
+  p.innerHTML = `<p class="ttl">REKOD KERJA HARI</p><p class="mg">Minggu : ${esc(S.meta.minggu || "")}</p>` + blocks.join(`<div class="sp"></div>`);
+  renderRegenBar();
+}
+function renderRegenBar(){
+  const bar = $("#regenBar");
+  if(S.contohDipaparkan){ bar.innerHTML = `<span class="tag">Contoh, dijana offline dari RPT sampel</span>`; return; }
+  bar.innerHTML = S.hasil.map((h, i) => h ? `<button class="btn small" data-regen="${i}" title="Suntingan manual pada kertas akan hilang">Jana semula sesi ${i+1}</button>` : "").join("");
+  $$("[data-regen]", bar).forEach(b => b.addEventListener("click", () => jana(+b.dataset.regen)));
+}
+
+/* ===================== EKSPORT ===================== */
+function wordHtml(inner){
+  return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>RPH</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>@page{size:A4;margin:1.8cm 1.8cm}body{font-family:Calibri,Arial,sans-serif;font-size:11pt}
+.ttl{text-align:center;font-weight:bold;font-size:12pt}.mg{font-weight:bold}
+table{border-collapse:collapse;width:100%}table.rph,table.refl{border:1.5pt solid #000}
+table.rph td,table.rph th,table.refl td{border:1pt solid #000;padding:5pt 8pt;vertical-align:top}
+table.rph th{font-weight:normal;text-align:center}table.inner td{border:none!important;padding:0!important}
+.jw{font-family:"Traditional Arabic","Arial";font-size:13pt}p{margin:0 0 8pt}ol{margin:2pt 0 2pt 18pt}.sp{height:24pt}</style></head><body>${inner}</body></html>`;
+}
+function paperHtmlClean(){
+  const c = $("#paper").cloneNode(true);
+  c.querySelectorAll("[contenteditable]").forEach(x => x.removeAttribute("contenteditable"));
+  c.querySelectorAll(".sp").forEach(x => x.outerHTML = "<p>&nbsp;</p>");
+  return c.innerHTML;
+}
+async function simpanFail(filename, data, type){
+  const blob = new Blob([data], { type });
+  if(S.downloads){
+    try{ await S.downloads.save({ filename, data: blob }); return true; }
+    catch(e){ if(e && e.code === "cancelled") return false; }
+  }
+  if(!window.claude){
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    return true;
+  }
+  toast("Muat turun tidak dibenarkan di paparan ini. Guna 'Salin teks'.");
+  return false;
+}
+$("#btnWord").addEventListener("click", async () => {
+  if(!S.meta || !S.hasil.some(Boolean)) return toast("Jana RPH dahulu.");
+  const fn = `RPH_M${S.meta.minggu || "x"}_${S.meta.tarikh}.doc`;
+  if(await simpanFail(fn, "﻿" + wordHtml(paperHtmlClean()), "application/msword")) toast("Fail Word disimpan.");
+});
+$("#btnSalin").addEventListener("click", async () => {
+  const txt = $("#paper").innerText;
+  try{ await navigator.clipboard.writeText(txt); toast("Teks RPH disalin."); }
+  catch(e){
+    const r = document.createRange(); r.selectNodeContents($("#paper"));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    toast("Teks dipilih. Tekan Ctrl+C / Salin.");
+  }
+});
+$("#btnCetak").addEventListener("click", () => {
+  const w = window.open("", "_blank"); if(!w) return;
+  w.document.write(wordHtml(paperHtmlClean())); w.document.close(); w.focus(); w.print();
+});
+$("#btnSimpan").addEventListener("click", async () => {
+  if(!S.meta || !S.hasil.some(Boolean)) return toast("Jana RPH dahulu.");
+  const rec = {
+    id: uid(), dibuat: Date.now(), ...S.meta,
+    ringkasan: S.hasil.filter(Boolean).map(h => `${h.subjek}: ${h.tajuk}`).join(" · "),
+    hasil: S.hasil.filter(Boolean).map(h => ({ subjek: h.subjek, tajuk: h.tajuk, setInduksi: h.setInduksi, aktiviti: h.aktiviti })),
+    html: paperHtmlClean()
+  };
+  S.rekod.unshift(rec);
+  S.rekod = S.rekod.slice(0, 80);
+  try{ await saveRekod(); toast("Disimpan ke Rekod."); }
+  catch(e){ toast("Tak dapat simpan ke pelayan. Disimpan dalam pelayar ini sahaja."); }
+});
+
+/* ===================== TAB RPT ===================== */
+let editM = null;
+function aktifRpt(){ return S.rpt.find(r => r.id === S.rptAktif) || S.rpt[0]; }
+function renderRpt(){
+  if(!S.rpt.length){ S.rpt.push({ id: uid(), subjek: "Subjek baru", tahap: "6 Tahun", tahun: new Date().getFullYear(), minggu: [] }); }
+  const r = aktifRpt(); S.rptAktif = r.id;
+  $("#rptPilih").innerHTML = S.rpt.map(x => `<option value="${x.id}" ${x.id===r.id?"selected":""}>${esc(x.subjek)} (${esc(x.tahap)})</option>`).join("");
+  $("#rSubjek").value = r.subjek; $("#rTahap").value = r.tahap; $("#rTahun").value = r.tahun;
+  const ab = S.tetapan.kumpulan === "A";
+  const rows = r.minggu.slice().sort((a,b) => a.m - b.m).map(w => `
+    <tr class="${w.cuti ? "cuti" : ""}">
+      <td class="num"><b>${w.m}</b><br><small>${esc(w.bulan || "")}</small></td>
+      <td class="num">${esc(w.tA || "")}<br>${esc(w.tB || "")}</td>
+      <td>${w.unit ? `<b>${esc(w.unit)}</b><br>` : ""}${jw(w.tajuk)}${w.ms ? `<br><small>MS ${esc(w.ms)}</small>` : ""}${w.fokus ? `<br>${jw(w.fokus)}` : ""}</td>
+      <td><ul class="hp-list">${(w.hp||[]).map(h => `<li>${h.k ? `<b>${esc(h.k)}</b> ` : ""}${esc(h.t)}</li>`).join("")}</ul></td>
+      <td><button class="btn small" data-edit="${w.m}">Edit</button></td>
+    </tr>`).join("");
+  $("#rptTable").innerHTML = `<thead><tr><th>Minggu</th><th>Tarikh<br><small>${ab ? "Ahad–Khamis dipakai" : "Isnin–Jumaat dipakai"}</small></th><th>Kandungan / tajuk</th><th>Hasil pembelajaran</th><th></th></tr></thead><tbody>${rows || `<tr><td colspan="5" class="hint">Belum ada minggu. Tambah secara manual atau import di bawah.</td></tr>`}</tbody>`;
+  $$("[data-edit]").forEach(b => b.addEventListener("click", () => { editM = +b.dataset.edit; renderEditor(); }));
+  renderEditor();
+}
+function renderEditor(){
+  const slot = $("#rptEditorSlot");
+  const r = aktifRpt();
+  const w = editM === null ? null : r.minggu.find(x => x.m === editM);
+  if(!w){ slot.innerHTML = ""; return; }
+  slot.innerHTML = `<form class="editor" id="edForm">
+    <b>Edit minggu ${w.m}</b>
+    <div class="row" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+      <label>Minggu<input id="eM" type="number" min="1" value="${w.m}"></label>
+      <label>Bulan<input id="eBulan" value="${esc(w.bulan||"")}"></label>
+      <label>Tarikh (Ahad–Khamis)<input id="eTA" value="${esc(w.tA||"")}" placeholder="25/1-29/1"></label>
+      <label>Tarikh (Isnin–Jumaat)<input id="eTB" value="${esc(w.tB||"")}" placeholder="26/1-30/1"></label>
+    </div>
+    <div class="row" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">
+      <label>Unit<input id="eUnit" value="${esc(w.unit||"")}"></label>
+      <label>Tajuk<input id="eTajuk" value="${esc(w.tajuk||"")}"></label>
+      <label>Muka surat<input id="eMs" value="${esc(w.ms||"")}"></label>
+      <label>Fokus (huruf / suku kata)<input id="eFokus" dir="auto" value="${esc(w.fokus||"")}"></label>
+    </div>
+    <label>Hasil pembelajaran (satu baris satu HP, kod di depan)<textarea id="eHp">${esc((w.hp||[]).map(h => (h.k ? h.k + " " : "") + h.t).join("\n"))}</textarea></label>
+    <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="eCuti" style="width:auto" ${w.cuti?"checked":""}> Minggu cuti / tiada PdP</label>
+    <div class="actions"><button class="btn primary small" type="submit">Simpan minggu</button><button class="btn small" type="button" id="eTutup">Tutup</button><button class="btn small danger" type="button" id="ePadam">Padam minggu</button></div>
+  </form>`;
+  $("#edForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    w.m = +$("#eM").value || w.m; w.bulan = $("#eBulan").value.trim(); w.tA = $("#eTA").value.trim(); w.tB = $("#eTB").value.trim();
+    w.unit = $("#eUnit").value.trim(); w.tajuk = $("#eTajuk").value.trim(); w.ms = $("#eMs").value.trim(); w.fokus = $("#eFokus").value.trim();
+    w.cuti = $("#eCuti").checked;
+    w.hp = $("#eHp").value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const m = l.match(/^(\d+(?:\.\d+)+)\s+(.*)$/); return m ? { k: m[1], t: m[2] } : { k: "", t: l }; });
+    editM = null; await persistRpt("Minggu disimpan.");
+  });
+  $("#eTutup").addEventListener("click", () => { editM = null; renderEditor(); });
+  $("#ePadam").addEventListener("click", e => {
+    if(e.target.dataset.ok !== "1"){ e.target.dataset.ok = "1"; e.target.textContent = "Tekan sekali lagi untuk padam"; return; }
+    r.minggu = r.minggu.filter(x => x !== w); editM = null; persistRpt("Minggu dipadam.");
+  });
+  slot.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+async function persistRpt(msg){
+  renderRpt(); renderSesi(); updateWeekInfo();
+  try{ await saveRpt(); $("#statusRpt").textContent = msg || "Disimpan."; }
+  catch(e){ $("#statusRpt").textContent = "Disimpan dalam pelayar ini sahaja."; }
+}
+$("#rptPilih").addEventListener("change", e => { S.rptAktif = e.target.value; editM = null; renderRpt(); });
+["rSubjek","rTahap","rTahun"].forEach(id => $("#"+id).addEventListener("change", () => {
+  const r = aktifRpt(); r.subjek = $("#rSubjek").value.trim() || r.subjek; r.tahap = $("#rTahap").value.trim(); r.tahun = +$("#rTahun").value || r.tahun;
+  persistRpt();
+}));
+$("#btnTambahMinggu").addEventListener("click", () => {
+  const r = aktifRpt(); const m = Math.max(0, ...r.minggu.map(x => x.m)) + 1;
+  r.minggu.push({ m, fasa:"", bulan:"", tA:"", tB:"", unit:"", tajuk:"", ms:"", fokus:"", cuti:false, hp:[] });
+  editM = m; renderRpt();
+});
+$("#btnRptBaru").addEventListener("click", () => {
+  const r = { id: uid(), subjek: "Subjek baru", tahap: "6 Tahun", tahun: new Date().getFullYear(), minggu: [] };
+  S.rpt.push(r); S.rptAktif = r.id; persistRpt("RPT baru dicipta. Tukar nama matapelajaran di atas.");
+});
+$("#btnPadamRpt").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if(b.dataset.ok !== "1"){ b.dataset.ok = "1"; b.textContent = "Tekan sekali lagi untuk padam RPT"; setTimeout(() => { b.dataset.ok = ""; b.textContent = "Padam RPT ini"; }, 4000); return; }
+  S.rpt = S.rpt.filter(x => x.id !== S.rptAktif); S.rptAktif = S.rpt[0]?.id; b.dataset.ok = ""; b.textContent = "Padam RPT ini";
+  persistRpt("RPT dipadam.");
+});
+$("#btnJsonKeluar").addEventListener("click", () => { $("#rptJson").value = JSON.stringify(aktifRpt(), null, 2); });
+$("#btnJsonMasuk").addEventListener("click", () => {
+  try{
+    const o = JSON.parse($("#rptJson").value);
+    const r = normRpt(o); r.id = S.rptAktif;
+    S.rpt = S.rpt.map(x => x.id === S.rptAktif ? r : x);
+    persistRpt("RPT diganti dari JSON.");
+  }catch(e){ $("#statusRpt").textContent = "JSON tak sah: " + e.message; }
+});
+function normRpt(o){
+  if(!o || !Array.isArray(o.minggu)) throw new Error("perlu ada senarai 'minggu'");
+  return {
+    id: o.id || uid(), subjek: String(o.subjek || "Subjek"), tahap: String(o.tahap || "6 Tahun"), tahun: +o.tahun || new Date().getFullYear(),
+    minggu: o.minggu.map((w, i) => ({
+      m: +w.m || +w.minggu || i+1, fasa: String(w.fasa||""), bulan: String(w.bulan||""),
+      tA: String(w.tA || w.tarikhA || ""), tB: String(w.tB || w.tarikhB || ""),
+      unit: String(w.unit||""), tajuk: String(w.tajuk||""), ms: String(w.ms||""), fokus: String(w.fokus||""),
+      cuti: !!w.cuti, hp: (Array.isArray(w.hp) ? w.hp : []).map(h => typeof h === "string" ? { k:"", t:h } : { k: String(h.k || h.kod || ""), t: String(h.t || h.teks || "") }).filter(h => h.t)
+    }))
+  };
+}
+
+/* Import RPT dengan AI */
+$("#btnImpAi").addEventListener("click", async () => {
+  const st = $("#statusImp"); st.className = "status";
+  if(!S.sample){ st.textContent = "AI tidak tersedia di paparan ini. Guna import JSON atau tambah minggu secara manual."; st.className = "status err"; return; }
+  const files = [...$("#impGambar").files];
+  const teks = $("#impTeks").value.trim();
+  if(!files.length && !teks){ st.textContent = "Pilih gambar atau tampal teks RPT dahulu."; return; }
+  const r = aktifRpt();
+  let images;
+  if(files.length){
+    const lim = await S.sample.limits().catch(() => null);
+    if(!lim || !lim.images){ st.textContent = "Paparan ini tak boleh hantar gambar kepada AI. Tampal teks sebagai ganti."; st.className = "status err"; return; }
+    images = files.slice(0, lim.images.maxCount || 5);
+  }
+  const prompt = `Anda membaca Rancangan Pengajaran Tahunan (RPT) Tadika PASTI${images ? " daripada gambar yang dilampirkan" : ""}. Ekstrak SETIAP minggu dalam jadual.
+Matapelajaran semasa: ${r.subjek}. Tahun: ${r.tahun}.
+Ada dua lajur tarikh: tarikh pertama (biasanya Ahad–Khamis) letak di "tA", tarikh kedua (Isnin–Jumaat) di "tB". Format "D/M-D/M".
+Kod hasil pembelajaran seperti "1.10.1" letak di "k", ayatnya di "t". Jika ayat terpotong di tepi gambar, lengkapkan dengan munasabah.
+Huruf atau suku kata Jawi yang ditunjukkan bagi unit itu letak di "fokus" dalam tulisan Jawi. Minggu cuti: "cuti": true dan nama cuti di "tajuk".
+${teks ? "TEKS RPT:\n" + teks.slice(0, 20000) : ""}
+Balas JSON SAHAJA:
+{"subjek":"...","tahap":"...","tahun":2026,"minggu":[{"m":3,"fasa":"Fasa 2","bulan":"JAN","tA":"25/1-29/1","tB":"26/1-30/1","unit":"Unit 1","tajuk":"Huruf Vokal","ms":"3-8","fokus":"ا و ي","cuti":false,"hp":[{"k":"1.2.3","t":"Menyebut huruf vokal dalam perkataan"}]}]}`;
+  $("#btnImpAi").disabled = true;
+  st.textContent = "AI sedang membaca RPT… (boleh ambil sehingga satu minit)";
+  try{
+    const o = await S.sample.json(prompt, { cache: false, images, modelTier: "complex" });
+    const nr = normRpt(o);
+    showImportResult(nr);
+    st.textContent = `Jumpa ${nr.minggu.length} minggu. Pilih cara simpan di bawah.`;
+  }catch(e){
+    st.className = "status err";
+    st.textContent = e && e.code === "invalid_json" ? "AI tak dapat susun jadual dengan kemas. Cuba gambar yang lebih jelas atau kurangkan bilangan gambar." : e && e.code === "not_granted" ? "Akses AI tidak dibenarkan." : "Tak berjaya baca RPT. " + (e && e.message ? e.message : "");
+  }finally{ $("#btnImpAi").disabled = false; }
+});
+function showImportResult(nr){
+  const box = $("#impHasil");
+  box.innerHTML = `<div class="editor">
+    <b>Hasil bacaan: ${nr.minggu.length} minggu (${esc(nr.subjek)})</b>
+    <p class="hint" style="margin:0">${nr.minggu.slice(0, 12).map(w => `M${w.m} ${esc([w.unit, w.tajuk].filter(Boolean).join(" "))}`).join(" · ")}${nr.minggu.length > 12 ? " …" : ""}</p>
+    <div class="actions">
+      <button class="btn small primary" id="impGabung">Gabung dengan RPT ${esc(aktifRpt().subjek)}</button>
+      <button class="btn small" id="impGanti">Ganti RPT ${esc(aktifRpt().subjek)}</button>
+      <button class="btn small" id="impBaru">Simpan sebagai RPT baru</button>
+    </div></div>`;
+  $("#impGabung").addEventListener("click", () => {
+    const r = aktifRpt();
+    nr.minggu.forEach(w => { const i = r.minggu.findIndex(x => x.m === w.m); if(i >= 0) r.minggu[i] = w; else r.minggu.push(w); });
+    box.innerHTML = ""; persistRpt(`${nr.minggu.length} minggu digabung.`);
+  });
+  $("#impGanti").addEventListener("click", () => {
+    const r = aktifRpt(); r.minggu = nr.minggu; if(nr.tahun) r.tahun = nr.tahun;
+    box.innerHTML = ""; persistRpt("RPT diganti.");
+  });
+  $("#impBaru").addEventListener("click", () => {
+    nr.id = uid(); S.rpt.push(nr); S.rptAktif = nr.id;
+    box.innerHTML = ""; persistRpt("RPT baru disimpan.");
+  });
+}
+
+/* ===================== TAB REKOD ===================== */
+function renderRekod(){
+  $("#rekodCount").textContent = S.rekod.length ? `${S.rekod.length} RPH` : "";
+  const list = $("#rekodList");
+  if(!S.rekod.length){ list.innerHTML = `<p class="hint">Belum ada RPH disimpan. Lepas jana, tekan <b>Simpan ke Rekod</b>.</p>`; return; }
+  list.innerHTML = S.rekod.map(r => `<div class="rk">
+    <b>${esc(r.hari || "")}, ${esc(r.tarikhStr || "")}</b>
+    <small>Minggu ${esc(r.minggu || "-")} · ${esc(r.kelas || "")}</small>
+    <div>${jw(r.ringkasan || "")}</div>
+    <div class="actions"><button class="btn small" data-buka="${r.id}">Buka</button><button class="btn small ghost danger" data-padam="${r.id}">Padam</button></div>
+  </div>`).join("");
+  $$("[data-buka]", list).forEach(b => b.addEventListener("click", () => {
+    const r = S.rekod.find(x => x.id === b.dataset.buka); if(!r) return;
+    S.meta = { tarikh: r.tarikh, tarikhStr: r.tarikhStr, hari: r.hari, minggu: r.minggu, kelas: r.kelas };
+    S.hasil = []; S.contohDipaparkan = false;
+    $("#paper").innerHTML = r.html;
+    $("#regenBar").innerHTML = `<span class="tag">Dibuka dari Rekod</span>`;
+    S.hasil = [{ ...r.hasil[0] }]; // supaya butang eksport aktif
+    showTab("jana");
+  }));
+  $$("[data-padam]", list).forEach(b => b.addEventListener("click", async () => {
+    if(b.dataset.ok !== "1"){ b.dataset.ok = "1"; b.textContent = "Pasti?"; return; }
+    S.rekod = S.rekod.filter(x => x.id !== b.dataset.padam); renderRekod();
+    try{ await saveRekod(); }catch(e){}
+  }));
+}
+
+/* ===================== TAB TETAPAN ===================== */
+function renderTetapan(){
+  const t = S.tetapan;
+  $("#tKelas").value = t.kelas; $("#tKumpulan").value = t.kumpulan; $("#tMasa").value = t.masa.join("\n");
+  $("#tRefleksi").value = t.refleksi; $("#tContoh").value = t.contoh;
+}
+$("#btnSimpanTetapan").addEventListener("click", async () => {
+  const t = S.tetapan;
+  t.kelas = $("#tKelas").value.trim() || t.kelas; t.kumpulan = $("#tKumpulan").value;
+  t.masa = $("#tMasa").value.split("\n").map(x => x.trim()).filter(Boolean); t.refleksi = $("#tRefleksi").value;
+  $("#fKelas").value = t.kelas; updateWeekInfo();
+  try{ await saveTetapan(); toast("Tetapan disimpan."); }catch(e){ toast("Disimpan dalam pelayar ini sahaja."); }
+});
+$("#btnSimpanContoh").addEventListener("click", async () => {
+  S.tetapan.contoh = $("#tContoh").value.trim() || DEFAULT_CONTOH;
+  try{ await saveTetapan(); toast("Contoh RPH disimpan."); }catch(e){ toast("Disimpan dalam pelayar ini sahaja."); }
+});
+$("#btnBackup").addEventListener("click", async () => {
+  const data = JSON.stringify({ versi: 1, rpt: S.rpt, tetapan: S.tetapan, rekod: S.rekod }, null, 2);
+  if(await simpanFail(`backup-rph-pasti-${toISO(new Date())}.json`, data, "application/json")) $("#statusBackup").textContent = "Backup disimpan.";
+});
+$("#fileRestore").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    const o = JSON.parse(await f.text());
+    if(Array.isArray(o.rpt)) S.rpt = o.rpt.map(normRpt);
+    if(o.tetapan) S.tetapan = { ...DEFAULT_TETAPAN, ...o.tetapan };
+    if(Array.isArray(o.rekod)) S.rekod = o.rekod;
+    S.rptAktif = S.rpt[0]?.id;
+    await Promise.all([saveRpt(), saveTetapan(), saveRekod()]).catch(() => {});
+    renderTetapan(); renderSesi(); updateWeekInfo();
+    $("#statusBackup").textContent = "Backup dipulihkan.";
+  }catch(err){ $("#statusBackup").textContent = "Fail backup tak sah."; }
+});
+
+/* ===================== MULA ===================== */
+function pilihTarikhAwal(){
+  const today = new Date(); today.setHours(12);
+  const r = S.rpt[0];
+  if(findWeek(r, today)) return today;
+  const w = r?.minggu.find(x => !x.cuti && x.hp.length && x.unit) || r?.minggu[0];
+  const rg = w && weekDates(r, w);
+  return rg ? rg[0] : today;
+}
+function bootUi(){
+  $("#fKelas").value = S.tetapan.kelas;
+  $("#fTarikh").value = toISO(pilihTarikhAwal());
+  S.sesi = [defaultSesi(0), defaultSesi(1)];
+  renderSesi(); updateWeekInfo();
+  // contoh awal (offline, tiada kos) supaya kertas tak kosong
+  const meta = readMeta(); S.meta = meta;
+  S.hasil = S.sesi.map(s => { const c = buildCtx(s, parseISO(meta.tarikh)); const h = janaOffline(c); h.subjek = c.subjek; h.masa = c.masa; if(S.tetapan.refleksi==="kosong") h.refleksi=""; return h; });
+  S.contohDipaparkan = true;
+  renderPaper();
+}
+
+(async function start(){
+  bootUi();
+  setMod("off");
+  $("#chipAiTxt").textContent = "AI: menyemak…";
+  if(!window.claude){
+    $("#chipAiTxt").textContent = "AI: tiada (mod offline)";
+    $("#btnCetak").hidden = false;
+    $("#modAi").disabled = true;
+  }
+  // AI & muat turun
+  if(window.claude && claude.use){
+    claude.use("sample").then(s => {
+      S.sample = s;
+      $("#chipAi").classList.toggle("on", !!s);
+      $("#chipAiTxt").textContent = s ? "AI: sedia" : "AI: tiada (mod offline)";
+      $("#modAi").disabled = !s;
+      if(s) setMod("ai");
+    }).catch(() => { $("#chipAiTxt").textContent = "AI: tiada (mod offline)"; $("#modAi").disabled = true; });
+    claude.use("downloads").then(d => { S.downloads = d; }).catch(() => {});
+  }
+  // simpanan
+  await Store.init();
+  $("#chipStore").classList.toggle("on", Store.mode === "db");
+  $("#chipStoreTxt").textContent = Store.mode === "db" ? "Simpanan: akaun Claude" : "Simpanan: pelayar ini";
+  const [rpt, tet, rek, jej] = await Promise.all([Store.get("rpt"), Store.get("tetapan"), Store.get("rekod"), Store.get("jejak")]);
+  if(rpt && Array.isArray(rpt.list) && rpt.list.length) { S.rpt = rpt.list; S.rptAktif = S.rpt[0].id; }
+  if(tet) S.tetapan = { ...DEFAULT_TETAPAN, ...tet };
+  if(rek && Array.isArray(rek.list)) S.rekod = rek.list;
+  if(jej && Array.isArray(jej.ids)) S.jejak = { ids: jej.ids, teks: jej.teks || [] };
+  if(rpt || tet){ bootUi(); if(S.sample) setMod("ai"); }
+})();
+</script>
