@@ -61,7 +61,43 @@ label > span.lbl-hint{font-weight:400;color:var(--muted);font-size:.85rem}
 .check input{width:24px;height:24px;min-height:0;flex:none;accent-color:var(--green)}
 .stack{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
 .editor .actions .btn,.panel > .btn{align-self:flex-start}
-@media (max-width:560px){.row,.row.r3{grid-template-columns:1fr}.row.keep2{grid-template-columns:1fr 1fr}.editor .actions{flex-direction:column;align-items:stretch}.editor .actions .btn,.panel > .btn{align-self:stretch;flex:1}.prev-bar .actions{width:100%}.prev-bar .actions .btn{flex:1}nav.tabs button{padding:12px 8px;font-size:.98rem}}
+/* kawalan borang seragam di semua telefon (iPhone & Android) */
+select{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%236b7d71' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;text-overflow:ellipsis}
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;text-align:left;line-height:1.3}
+input[type=date]::-webkit-date-and-time-value{text-align:left}
+input[type=date]::-webkit-calendar-picker-indicator{opacity:.6}
+input[type=file]{padding:8px;font-size:.95rem}
+input[type=file]::file-selector-button{font:inherit;font-weight:600;border:0;background:var(--green-soft);color:var(--green-text);padding:8px 14px;border-radius:8px;margin-right:10px;cursor:pointer}
+.export{display:flex;flex-wrap:wrap;gap:8px}
+.rpt-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.rpt-head .actions select{width:auto;max-width:100%}
+/* senarai minggu RPT dalam bentuk kad */
+.wk-list{display:flex;flex-direction:column;gap:12px}
+.wk{border:1.5px solid var(--line);border-radius:14px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.wk.cuti{background:var(--red-soft);border-color:transparent;color:var(--red-ink)}
+.wk-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.wk-no{font-family:var(--f-display);font-weight:800;font-size:1.1rem;color:var(--green-text)}
+.wk.cuti .wk-no{color:var(--red-ink)}
+.wk-date{font-size:.92rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.wk-title{font-size:1.05rem;font-weight:600}
+.wk-meta{font-size:.92rem;color:var(--muted)}
+.wk .hp-list{font-size:.92rem;gap:4px}
+.wk-actions{display:grid;grid-template-columns:repeat(2,minmax(0,240px));gap:10px}
+.ed-slot:empty,.bk-slot:empty{display:none}
+@media (max-width:560px){.wk-actions{grid-template-columns:1fr 1fr}}
+.wk-actions .btn{width:100%}
+.wk .editor{padding:16px;margin-top:4px}
+@media (max-width:440px){.wk-actions{grid-template-columns:1fr}.wk{padding:14px}.wk .editor{padding:14px}.panel{padding:16px}}
+@media (max-width:700px){
+  #paper.paper{min-width:0;padding:20px 12px;font-size:13px}
+  #paper table.rph td,#paper table.rph th,#paper table.refl td{padding:6px 7px}
+  #paper table.inner td{display:block;width:100%!important;padding:0!important}
+  #paper table.inner td + td{margin-top:6px}
+  #paper td.kiri{width:38%!important}
+  #paper .mg{margin-left:0}
+  #paper ol{margin-left:2px;padding-left:16px}
+}
+@media (max-width:560px){.export,#regenBar{display:grid;grid-template-columns:1fr 1fr;width:100%}.export .btn,#regenBar .btn{width:100%}.rpt-head .actions{display:grid;grid-template-columns:1fr;width:100%}.rpt-head .actions select{width:100%}.row,.row.r3{grid-template-columns:1fr}.row.keep2{grid-template-columns:1fr 1fr}.editor .actions{flex-direction:column;align-items:stretch}.editor .actions .btn,.panel > .btn{align-self:stretch;flex:1}nav.tabs button{padding:12px 8px;font-size:.98rem}}
 .hint{font-size:.92rem;color:var(--muted);margin:0}
 .weekinfo{background:var(--green-soft);color:var(--green-text);border-radius:12px;padding:12px 14px;font-size:1rem}
 .weekinfo.warn{background:var(--red-soft);color:var(--red-ink)}
@@ -169,7 +205,7 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
         <h3>Cara jana</h3>
         <div class="actions">
           <div class="seg" role="group" aria-label="Mod jana" style="display:flex">
-            <button type="button" id="modOff" aria-pressed="true">Bank aktiviti (0 token)</button>
+            <button type="button" id="modOff" aria-pressed="true">Bank aktiviti</button>
             <button type="button" id="modAi" aria-pressed="false">AI</button>
           </div>
         </div>
@@ -184,11 +220,11 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
       <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
         <div class="prev-bar">
           <div class="actions" id="regenBar"></div>
-          <div class="actions">
+          <div class="export">
             <button class="btn small" id="btnWord">Muat turun Word</button>
             <button class="btn small" id="btnSalin">Salin teks</button>
             <button class="btn small" id="btnCetak" hidden>Cetak / PDF</button>
-            <button class="btn small sun" id="btnSimpan">Simpan ke Rekod</button>
+            <button class="btn small sun" id="btnSimpan">Simpan Rekod</button>
           </div>
         </div>
         <p class="hint">Nak ubah ayat? Klik terus pada kertas di bawah dan taip.</p>
@@ -201,10 +237,10 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
   <section id="tab-rpt" hidden>
     <div class="cols" style="grid-template-columns:minmax(0,1fr)">
       <div class="panel">
-        <div class="prev-bar">
+        <div class="rpt-head">
           <h2>Rancangan Pengajaran Tahunan</h2>
           <div class="actions">
-            <select id="rptPilih" aria-label="Pilih RPT" style="width:auto;max-width:100%"></select>
+            <select id="rptPilih" aria-label="Pilih RPT"></select>
             <button class="btn small" id="btnRptBaru">+ RPT subjek lain</button>
           </div>
         </div>
@@ -213,9 +249,7 @@ table.rpt td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
           <label>Umur / tahap<input id="rTahap"></label>
           <label>Tahun<input id="rTahun" type="number" min="2020" max="2100"></label>
         </div>
-        <div class="tbl-wrap"><table class="rpt" id="rptTable"></table></div>
-        <div id="rptEditorSlot"></div>
-        <div id="bankSlot"></div>
+        <div class="wk-list" id="rptList"></div>
         <div class="actions">
           <button class="btn small" id="btnTambahMinggu">+ Tambah minggu</button>
           <button class="btn small danger" id="btnPadamRpt">Padam RPT ini</button>
@@ -1020,7 +1054,7 @@ function prevWeek(r, w){
   return sorted[0] || null;
 }
 function weekLabel(w){
-  return `M${w.m} · ${[w.unit, w.tajuk].filter(Boolean).join(" ")}${w.ms ? ` (MS ${w.ms})` : ""}${w.cuti ? " · CUTI" : ""}`;
+  return `M${w.m} · ${[w.unit, w.tajuk].filter(Boolean).join(" ")}${w.cuti ? " · CUTI" : ""}`;
 }
 function jenisOf(subjek, tajuk){
   const t = (subjek + " " + tajuk).toLowerCase();
@@ -1086,7 +1120,7 @@ function induksiSelect(s){
   const items = L.induksi.flat();
   if(!items.length) return "";
   const opt = items.map(it => `<option value="${esc(it.id)}" ${it.id === s.induksiId ? "selected" : ""}>${used.has(it.id) ? "✓ " : ""}${esc(fill(it, ctx).slice(0, 90))}</option>`).join("");
-  return `<label>Set induksi<select id="ind-${s.id}" data-f="induksiId"><option value="">Auto: pilih yang belum digunakan</option>${opt}</select></label>`;
+  return `<label>Set induksi<select id="ind-${s.id}" data-f="induksiId"><option value="">Auto (sistem pilih)</option>${opt}</select></label>`;
 }
 $("#btnTambahSesi").addEventListener("click", () => { S.sesi.push(defaultSesi(S.sesi.length)); S.sesi[S.sesi.length-1].tajukBebas = ""; renderSesi(); });
 
@@ -1518,25 +1552,33 @@ function renderRpt(){
   $("#rptPilih").innerHTML = S.rpt.map(x => `<option value="${x.id}" ${x.id===r.id?"selected":""}>${esc(x.subjek)} (${esc(x.tahap)})</option>`).join("");
   $("#rSubjek").value = r.subjek; $("#rTahap").value = r.tahap; $("#rTahun").value = r.tahun;
   const ab = S.tetapan.kumpulan === "A";
-  const rows = r.minggu.slice().sort((a,b) => a.m - b.m).map(w => `
-    <tr class="${w.cuti ? "cuti" : ""}">
-      <td class="num"><b>${w.m}</b><br><small>${esc(w.bulan || "")}</small></td>
-      <td class="num">${esc(w.tA || "")}<br>${esc(w.tB || "")}</td>
-      <td>${w.unit ? `<b>${esc(w.unit)}</b><br>` : ""}${jw(w.tajuk)}${w.ms ? `<br><small>MS ${esc(w.ms)}</small>` : ""}${w.fokus ? `<br>${jw(w.fokus)}` : ""}</td>
-      <td><ul class="hp-list">${(w.hp||[]).map(h => `<li>${h.k ? `<b>${esc(h.k)}</b> ` : ""}${esc(h.t)}</li>`).join("")}</ul></td>
-      <td class="num">${w.cuti ? "" : (() => { const n = bankCount({ subjek: r.subjek, unit: w.unit, tajuk: w.tajuk, fokus: w.fokus }); return `<button class="btn small" data-bank="${w.m}">${n ? n + " item" : "Tiada"}</button>`; })()}</td>
-      <td><button class="btn small" data-edit="${w.m}">Edit</button></td>
-    </tr>`).join("");
-  $("#rptTable").innerHTML = `<thead><tr><th>Minggu</th><th>Tarikh<br><small>${ab ? "Ahad–Khamis dipakai" : "Isnin–Jumaat dipakai"}</small></th><th>Kandungan / tajuk</th><th>Hasil pembelajaran</th><th>Bank aktiviti</th><th></th></tr></thead><tbody>${rows || `<tr><td colspan="6" class="hint">Belum ada minggu. Tambah secara manual atau import di bawah.</td></tr>`}</tbody>`;
-  $$("[data-edit]").forEach(b => b.addEventListener("click", () => { editM = +b.dataset.edit; renderEditor(); }));
-  $$("[data-bank]").forEach(b => b.addEventListener("click", () => { S.bankLihat = +b.dataset.bank; renderBank(); }));
+  const cards = r.minggu.slice().sort((a,b) => a.m - b.m).map(w => {
+    const utama = ab ? (w.tA || w.tB) : (w.tB || w.tA);
+    const n = w.cuti ? 0 : bankCount({ subjek: r.subjek, unit: w.unit, tajuk: w.tajuk, fokus: w.fokus });
+    return `<div class="wk ${w.cuti ? "cuti" : ""}">
+      <div class="wk-head"><span class="wk-no">Minggu ${w.m}${w.bulan ? " · " + esc(w.bulan) : ""}</span><span class="wk-date">${esc(utama || "")}</span></div>
+      <div class="wk-title">${w.unit ? esc(w.unit) + " · " : ""}${jw(w.tajuk || "(tiada tajuk)")}${w.fokus ? " " + jw(w.fokus) : ""}</div>
+      ${w.ms ? `<div class="wk-meta">Buku teks muka surat ${esc(w.ms)}</div>` : ""}
+      ${(w.hp||[]).length ? `<ul class="hp-list">${w.hp.map(h => `<li>${h.k ? `<b>${esc(h.k)}</b> ` : ""}${esc(h.t)}</li>`).join("")}</ul>` : ""}
+      <div class="wk-actions">
+        ${w.cuti ? `<span></span>` : `<button class="btn small" data-bank="${w.m}">Bank aktiviti (${n})</button>`}
+        <button class="btn small" data-edit="${w.m}">Edit minggu</button>
+      </div>
+      <div class="ed-slot" id="edSlot-${w.m}"></div>
+      <div class="bk-slot" id="bkSlot-${w.m}"></div>
+    </div>`;
+  }).join("");
+  $("#rptList").innerHTML = cards || `<p class="hint">Belum ada minggu. Tambah secara manual atau import di bawah.</p>`;
+  $$("[data-edit]").forEach(b => b.addEventListener("click", () => { const m = +b.dataset.edit; editM = editM === m ? null : m; S.bankLihat = null; renderBank(); renderEditor(); }));
+  $$("[data-bank]").forEach(b => b.addEventListener("click", () => { const m = +b.dataset.bank; S.bankLihat = S.bankLihat === m ? null : m; editM = null; renderEditor(); renderBank(); }));
   renderEditor(); renderBank();
 }
 function renderEditor(){
-  const slot = $("#rptEditorSlot");
+  $$(".ed-slot").forEach(x => x.innerHTML = "");
   const r = aktifRpt();
   const w = editM === null ? null : r.minggu.find(x => x.m === editM);
-  if(!w){ slot.innerHTML = ""; return; }
+  const slot = w && $("#edSlot-" + w.m);
+  if(!w || !slot) return;
   slot.innerHTML = `<form class="editor" id="edForm">
     <b>Edit minggu ${w.m}</b>
     <div class="row keep2">
@@ -1621,10 +1663,11 @@ function normRpt(o){
 
 /* Bank aktiviti unit */
 function renderBank(){
-  const slot = $("#bankSlot");
+  $$(".bk-slot").forEach(x => x.innerHTML = "");
   const r = aktifRpt();
   const w = S.bankLihat === null ? null : r.minggu.find(x => x.m === S.bankLihat);
-  if(!w){ slot.innerHTML = ""; return; }
+  const slot = w && $("#bkSlot-" + w.m);
+  if(!w || !slot) return;
   const c = { subjek: r.subjek, unit: w.unit, tajuk: w.tajuk, fokus: w.fokus, ms: w.ms, jenis: jenisOf(r.subjek, w.tajuk) };
   const ub = unitBanks(c);
   const used = usedMap();
@@ -1635,9 +1678,10 @@ function renderBank(){
       <ol style="margin:6px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:4px">${items.map(it => `<li>${jw(fill(it, c))}${it.b && it.b !== "Tiada" ? ` <small class="hint">· BBM: ${esc(it.b)}</small>` : ""}${used.has(it.id) ? ` <span class="tag">sudah guna</span>` : ""}${it.src === "ai" ? ` <span class="tag">AI</span>` : ""}</li>`).join("")}</ol></details>`;
   }).join("");
   slot.innerHTML = `<div class="editor">
-    <div class="prev-bar"><b>Bank aktiviti minggu ${w.m}: ${jw([w.unit, w.tajuk].filter(Boolean).join(" "))}</b><button class="btn small ghost" id="bankTutup">Tutup</button></div>
+    <b>Bank aktiviti minggu ${w.m}</b>
     ${sec || `<p class="hint" style="margin:0">Belum ada bank khas untuk tajuk ini. Sistem guna bank umum ${esc(c.jenis)} buat masa ini.</p>`}
     <div class="actions">
+      <button class="btn small" id="bankTutup">Tutup</button>
       <button class="btn small primary" id="bankAi">${ub.length ? "Tambah lagi dengan AI" : "Bina bank dengan AI"}</button>
       <span class="hint">Sekali bina, kira-kira 8-12 ribu token. Lepas tu jana RPH untuk tajuk ini 0 token.</span>
     </div>
@@ -1645,6 +1689,7 @@ function renderBank(){
   </div>`;
   $("#bankTutup").addEventListener("click", () => { S.bankLihat = null; renderBank(); });
   $("#bankAi").addEventListener("click", () => binaBankAi(r, w));
+  if(!S.sample){ $("#bankAi").hidden = true; const h = $("#bankAi").nextElementSibling; if(h) h.hidden = true; }
 }
 async function binaBankAi(r, w){
   const st = $("#statusBank"); st.className = "status";
